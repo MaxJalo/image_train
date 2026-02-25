@@ -349,10 +349,62 @@ Configuration & Logging:
 
 #### 4.7. Integration points
 
-Взаимодействие между сервисами:
-API для загрузки изображений: POST /upload_image (от камер к системе обработки).
-API для получения результатов: GET /get_result (от системы мониторинга).
-Webhook для уведомлений: Отправка результатов в систему "ТрансТелематика".
+##### API Endpoints
+
+##### 1. Health Check
+
+GET /health
+Response: Просто проверка, что API живой
+
+##### 2. Single Photo Upload
+
+POST /api/upload?wagon_id=wagon_12&camera_id=2
+Content-Type: multipart/form-data
+file: <image>
+Возвращает: PhotoUploadResponse
+
+##### 3. Batch Folder Upload
+
+POST /api/upload-folder
+Content-Type: application/json
+
+{
+  "folder_path": "/path/to/PZD_test",
+  "mapping": {
+    "2": {
+      "filename1.jpg": "wagon_12",
+      ...
+    }
+  }
+}
+
+
+Возвращает: BatchResultResponse
+
+##### 4. Get Wagon Result
+
+GET /api/wagon/{wagon_id}
+
+Пример: GET /api/wagon/wagon_12
+
+Возвращает: Финальный результат для вагона (side + статистика)
+
+##### 5. Get Batch Status
+
+GET /api/batch-status/{batch_id}
+
+
+Пример: GET /api/batch-status/PZD_test_20260224_105230
+
+Возвращает: Статус обработки batch (processing/completed/error)
+
+##### 6. Get Batch Result
+
+GET /api/batch-result/{batch_id}
+
+Пример: GET /api/batch-result/PZD_test_20260224_105230
+
+Возвращает: Полный результат batch со всеми вагонами
 
 
 #### 4.8. Риски

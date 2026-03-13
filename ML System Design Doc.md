@@ -386,7 +386,7 @@ file: <image>
 
 ##### 3. Batch Folder Upload
 
-POST /api/upload-folder
+POST /api/@router.post("/upload/zip")
 Content-Type: application/json
 
 {

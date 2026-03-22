@@ -1,3 +1,4 @@
+<!-- 🎯 ML service implementation plan and requirements -->
 # ML Service для классификации вагонов
 
 **Версия**: 2.2.0  

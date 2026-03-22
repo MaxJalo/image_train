@@ -1,3 +1,4 @@
+<!-- 🏛️ System architecture and component interactions -->
 # System Architecture 
 
 ## Data Flow Diagram

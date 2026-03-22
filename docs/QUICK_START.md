@@ -1,3 +1,4 @@
+<!-- ⚡ Quick start guide for API usage and setup -->
 # Wagon Classification API - Quick Start Guide
 
 ## 1. Быстрый старт (5 минут)

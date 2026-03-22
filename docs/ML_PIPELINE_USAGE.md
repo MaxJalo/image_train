@@ -1,3 +1,4 @@
+<!-- 🔄 ML Pipeline usage documentation and examples -->
 # Использование новых функций ML Pipeline
 
 ## Быстрый старт

@@ -34,3 +34,5 @@ NN_models
 .pytest_cache
 photo_aggregate
 # просто сообщение для push
+# git add poetry.lock poetry.toml
+# git commit -m "update .gitignore"

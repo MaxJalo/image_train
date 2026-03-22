@@ -1,3 +1,4 @@
+<!-- 📄 Main documentation for wagon classification microservice -->
 # 🏗️ microservise - Микросервисная архитектура для классификации вагонов
 
 ## 📋 Описание

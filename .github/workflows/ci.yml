@@ -23,9 +23,10 @@ jobs:
                   echo "$HOME/.local/bin" >> $GITHUB_PATH
             - name: Install dependencies
               run: |
-                  poetry lock
-                  poetry install
-
+                  pip install --upgrade pip
+                  pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
+                  pip install fastapi uvicorn pydantic pydantic-settings python-dotenv beanie motor pymongo ultralytics pillow numpy python-multipart
+                  pip install pytest pytest-asyncio black flake8
             - name: Run tests
               run: |
                   pytest

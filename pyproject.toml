@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "wagon-ml-api"
+name = "api"
 version = "1.0.0"
 description = "ML API for wagon detection and classification"
 authors = ["MaxJalo"]

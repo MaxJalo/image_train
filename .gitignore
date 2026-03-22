@@ -33,3 +33,4 @@ NN_models
 .venv
 .pytest_cache
 photo_aggregate
+# просто сообщение для push

@@ -1,3 +1,4 @@
+<!-- 🧪 Complete guide for testing strategies and test suite -->
 # Testing Guide / Руководство по тестированию
 
 ## Структура тестов / Test Structure

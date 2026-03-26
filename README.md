@@ -169,7 +169,7 @@ result = await classifier.classify_and_aggregate(
 ### 2. Detector Service (`services/detector.py`)
 
 **Функции:**
-- `predict_model2()` - YOLO детекция сдного изображения
+- `predict_model2()` - YOLO детекция одного изображения
 - `process_wagon_photos()` - Обработка всех фото вагона
 
 **Логика:**

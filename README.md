@@ -431,10 +431,8 @@ tail -f app.log | grep wagon_1
 
 ## 📖 Документация
 
-- 📄 [MICROSERVICES_OVERVIEW.md](../docs/MICROSERVICES_OVERVIEW.md) - Архитектурный обзор
-- 📄 [MICROSERVICES_ARCHITECTURE.md](../docs/MICROSERVICES_ARCHITECTURE.md) - Полное описание API
-- 📄 [MICROSERVICES_QUICK_START.md](../docs/MICROSERVICES_QUICK_START.md) - Быстрый старт
-- 📄 [MICROSERVICES_DEPLOYMENT.md](../MICROSERVICES_DEPLOYMENT.md) - Развертывание
+- 📄 [MICROSERVICES_ARCHITECTURE.md](docs/ARCHITECTURE.md) - Полное описание API
+- 📄 [MICROSERVICES_QUICK_START.md](docs/QUICK_START.md) - Быстрый старт
 
 ---
 

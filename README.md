@@ -28,7 +28,7 @@ microservise/
 │   └── wagon.py           ⭐ REST API endpoints (/api/ml/*)
 │
 ├── models/
-│   └── schemas.py         (MongoDB Pydantic models)
+│   └── schemas.py         (MongoDB Pydantic models (хранится локально))
 │
 ├── db/
 │   └── repository.py      (Database helpers)
@@ -37,7 +37,7 @@ microservise/
 │   ├── config.py          (Configuration)
 │   └── constants.py       (Constants)
 │
-├── photo_aggregate/       ⭐ Auto-generated storage for wagon photos
+├── photo_aggregate/       ⭐ Auto-generated storage for wagon photos (хранится локально)
 │   ├── wagon_1/
 │   ├── wagon_2/
 │   └── ...

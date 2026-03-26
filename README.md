@@ -28,7 +28,7 @@ microservise/
 │   └── wagon.py           ⭐ REST API endpoints (/api/ml/*)
 │
 ├── models/
-│   └── schemas.py         (MongoDB Pydantic models (хранится локально))
+│   └── schemas.py         (MongoDB Pydantic models)
 │
 ├── db/
 │   └── repository.py      (Database helpers)

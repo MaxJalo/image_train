@@ -65,7 +65,10 @@ def predict_model1(image: Image.Image) -> Tuple[bool, float]:
         img_tensor = transform(image).unsqueeze(0)
 
         # Получаем устройство из модели
-        device = next(model.parameters()).device
+        params = model.parameters()
+        if hasattr(params, '__iter__') and not hasattr(params, '__next__'):
+            params = iter(params)
+        device = next(params).device
         img_tensor = img_tensor.to(device)
         logger.debug(f"   Форма тензора: {img_tensor.shape}, устройство: {device}")
 
@@ -94,7 +97,7 @@ def predict_model1(image: Image.Image) -> Tuple[bool, float]:
     except Exception as e:
         logger.error(f"❌ Ошибка вывода Model-1: {type(e).__name__}: {str(e)}")
         logger.debug(f"   Traceback: {repr(e)}")
-        return pred_idx==0, 0.0
+        return False, 0.0
 
 
 async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Path, int]]]:

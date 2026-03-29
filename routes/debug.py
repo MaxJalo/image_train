@@ -44,7 +44,7 @@ class TestPhotoResponse(BaseModel):
 
 
 @router.post("/test-photo")
-async def test_photo(photo_path: str):
+async def run_test_photo(photo_path: str):
     p = photo_path
     if not p:
         raise HTTPException(status_code=400, detail="photo_path required")

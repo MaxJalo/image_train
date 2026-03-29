@@ -1,36 +1,73 @@
-# (test_aggregator)
-import pytest
-from unittest.mock import patch, MagicMock, AsyncMock
+import asyncio
+from unittest.mock import AsyncMock, MagicMock, patch
+
+from services import aggregator
 
 
-class TestAggregatorFunctions:
-    """Test cases for aggregator module"""
-    
-    @patch('services.aggregator.ensure_db_connection')
-    def test_aggregator_functions_exist(self, mock_db_check):
-        """Test that aggregator functions can be imported"""
-        from services.aggregator import get_batch_status, get_batch_results
-        assert callable(get_batch_status)
-        assert callable(get_batch_results)
-    
-    @patch('services.aggregator.ensure_db_connection')
-    @patch('models.schemas.BatchDocument.find_one')
-    def test_get_batch_status_structure(self, mock_find_one, mock_db_check):
-        """Test get_batch_status function exists and is async"""
-        from services.aggregator import get_batch_status
-        import inspect
-        assert inspect.iscoroutinefunction(get_batch_status)
-    
-    @patch('services.aggregator.ensure_db_connection')
-    def test_get_batch_results_structure(self, mock_db_check):
-        """Test get_batch_results function exists and is async"""
-        from services.aggregator import get_batch_results
-        import inspect
-        assert inspect.iscoroutinefunction(get_batch_results)
-    
-    @patch('db.repository.ensure_db_connection')
-    def test_aggregator_db_connection(self, mock_db):
-        """Test aggregator uses db connection"""
-        mock_db.return_value = True
-        assert callable(mock_db)
+class TestAggregatorService:
+    @patch('services.aggregator.ensure_db_connection', new_callable=AsyncMock)
+    @patch('services.aggregator.BatchDocument', autospec=True)
+    def test_process_and_save_batch_inserts_document(self, mock_batch_cls, mock_db_check):
+        mock_db_check.return_value = True
+        mock_instance = MagicMock()
+        mock_instance.insert = AsyncMock(return_value=None)
+        mock_batch_cls.return_value = mock_instance
+
+        batch_id = __import__('asyncio').run(
+            aggregator.process_and_save_batch(
+                batch_id="batch1",
+                folder_name="folder",
+                wagon_results={"wagon_1": {"total_photos": 1, "processed_photos": 1, "final_side": "left", "left_count": 1, "right_count": 0, "cameras": [1]}}
+            )
+        )
+
+        assert batch_id == "batch1"
+        mock_instance.insert.assert_awaited_once()
+
+    @patch('services.aggregator.ensure_db_connection', new_callable=AsyncMock)
+    @patch('services.aggregator.BatchDocument')
+    def test_get_batch_status_not_found(self, mock_batch_cls, mock_db_check):
+        mock_db_check.return_value = True
+        mock_batch_cls.batch_id = 'batch_id'
+        mock_batch_cls.find_one = AsyncMock(return_value=None)
+
+        response = __import__('asyncio').run(aggregator.get_batch_status("missing_batch"))
+
+        assert response["status"] == "not_found"
+        assert response["batch_id"] == "missing_batch"
+
+    @patch('services.aggregator.ensure_db_connection', new_callable=AsyncMock)
+    @patch('services.aggregator.BatchDocument')
+    def test_get_batch_results_returns_document(self, mock_batch_cls, mock_db_check):
+        mock_db_check.return_value = True
+        mock_batch_cls.batch_id = 'batch_id'
+        fake_doc = MagicMock()
+        fake_doc.folder = "folder"
+        fake_doc.status = "completed"
+        fake_doc.total_photos = 2
+        fake_doc.total_wagons = 1
+        fake_doc.processed_photos = 2
+        fake_doc.results = {"wagon_1": {"final_side": "left"}}
+        fake_doc.processed_at = "2026-01-01T00:00:00Z"
+        mock_batch_cls.find_one = AsyncMock(return_value=fake_doc)
+
+        response = __import__('asyncio').run(aggregator.get_batch_results("batch1"))
+
+        assert response["status"] == "completed"
+        assert response["total_wagons"] == 1
+        assert response["results"]["wagon_1"]["final_side"] == "left"
+
+    @patch('services.aggregator.ensure_db_connection', new_callable=AsyncMock)
+    def test_process_and_save_batch_returns_none_when_db_unavailable(self, mock_db_check):
+        mock_db_check.return_value = False
+
+        response = __import__('asyncio').run(
+            aggregator.process_and_save_batch(
+                batch_id="batch2",
+                folder_name="folder",
+                wagon_results={}
+            )
+        )
+
+        assert response is None
 

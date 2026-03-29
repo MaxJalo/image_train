@@ -1,32 +1,41 @@
 name: CI
 
 on:
-    push:
-        branches: [test]
-    pull_request:
-        branches: [test]
+  push:
+    branches: [test]
+  pull_request:
+    branches: [test]
 
 jobs:
-    test:
-        runs-on: ubuntu-latest
+  test:
+    runs-on: ubuntu-latest
 
-        steps:
-            - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Setup Python
-              uses: actions/setup-python@v5
-              with:
-                  python-version: "3.10"
-            - name: Install Poetry
-              run: |
-                  curl -sSL https://install.python-poetry.org | python3 -
-                  echo "$HOME/.local/bin" >> $GITHUB_PATH
-            - name: Install dependencies
-              run: |
-                  pip install --upgrade pip
-                  pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
-                  pip install fastapi uvicorn pydantic pydantic-settings python-dotenv beanie motor pymongo ultralytics pillow numpy python-multipart
-                  pip install pytest pytest-asyncio black flake8
-            - name: Run tests
-              run: |
-                  pytest
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
+          pip install fastapi uvicorn pydantic pydantic-settings python-dotenv beanie motor pymongo ultralytics pillow numpy python-multipart
+          pip install pytest pytest-asyncio black flake8 pytest-cov
+
+      - name: Run tests with coverage
+        run: |
+          pytest --cov=. --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml

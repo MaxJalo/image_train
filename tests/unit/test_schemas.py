@@ -1,4 +1,4 @@
-import pytest
+import pytest 
 from pydantic import ValidationError
 
 from models.schemas import Model2Output, FinalVerdictModel

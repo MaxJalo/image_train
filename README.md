@@ -21,7 +21,6 @@ microservise/
 │   ├── classifier.py      ⭐ Model-1: Классификация и разделение вагонов
 │   ├── detector.py        ⭐ Model-2: Детекция признаков YOLO
 │   ├── aggregator.py      ⭐ MongoDB: Агрегация результатов
-│   ├── storage.py         ⭐ File Storage: Управление photo_aggregate
 │   └── model_loader.py    (вспомогательный)
 │
 ├── routes/
@@ -221,36 +220,6 @@ result = await aggregator.aggregate_wagon_results(
 ```
 
 ---
-
-### 4. Storage Service (`services/storage.py`)
-
-**Функции:**
-- `list_wagons()` - Все вагоны в photo_aggregate
-- `get_wagon_photos()` - Фотографии вагона
-- `get_wagon_stats()` - Статистика вагона
-- `copy_photo_to_wagon()` - Добавить фото
-- `delete_wagon()` - Удалить вагон
-- `cleanup_old_wagons()` - Очистить старые файлы
-
-**Логика:**
-```
-photo_aggregate/
-├── wagon_1/          ← get_wagon_photos("wagon_1")
-│   ├── photo_001.jpg ← first image
-│   ├── photo_003.jpg ← every 2nd image
-│   └── photo_050.jpg ← last image
-└── wagon_2/
-```
-
-**Пример:**
-```python
-photos = storage.get_wagon_photos("wagon_1")
-stats = storage.get_all_stats()
-storage.cleanup_old_wagons(days=30)
-```
-
----
-
 ## 💾 MongoDB Структура
 
 ### PhotoDocument (photos коллекция)
@@ -357,7 +326,7 @@ curl -X GET "http://localhost:8000/api/ml/batch-results/batch_001"
 
 ### Полный пайплайн в Python
 ```python
-from microservise.services import classifier, detector, aggregator, storage
+from microservise.services import classifier, detector, aggregator
 
 # 1. Классификация
 result = await classifier.classify_and_aggregate("/photos", "batch_001")
@@ -365,17 +334,12 @@ result = await classifier.classify_and_aggregate("/photos", "batch_001")
 # 2. Для каждого вагона:
 for wagon_id in result["wagons"]:
     # Детекция
-    photos = storage.get_wagon_photos(wagon_id)
     photo_paths = [Path(p["path"]) for p in photos]
     detect = await detector.process_wagon_photos(wagon_id, photo_paths, 0, "batch_001")
     
     # Агрегация
     agg = await aggregator.aggregate_wagon_results(wagon_id, "batch_001")
     print(f"{wagon_id}: {agg['final_side']}")
-
-# 3. Статистика
-stats = storage.get_all_stats()
-print(f"Total: {stats['total_photos']} photos in {stats['total_wagons']} wagons")
 ```
 
 ### Примеры в `examples.py`

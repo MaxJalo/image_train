@@ -33,6 +33,11 @@ NN_models
 .venv
 .pytest_cache
 photo_aggregate
-# просто сообщение для push
-# git add poetry.lock
-# git commit -m "(poetry) update dependencies"
+.env
+.env.*
+*.log
+__pycache__/
+*.pyc
+.DS_Store
+photo_aggregate/
+results/

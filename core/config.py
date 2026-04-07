@@ -1,78 +1,113 @@
-# (config)
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
+from typing import Literal
 import logging
 
 logger = logging.getLogger(__name__)
 
-# Find .env file in project root or microservise directory
-_config_dir = Path(__file__).parent.parent  # microservise directory
-_project_root = _config_dir.parent  # ml_project directory
-_env_files = [
-    _config_dir / ".env",  # /home/max_jalo/ml_project/microservise/.env (check first)
-    _project_root / ".env",  # /home/max_jalo/ml_project/.env
-    Path.cwd() / ".env"  # Current working directory
-]
-_env_file = next((f for f in _env_files if f.exists()), _env_files[0])
-
-
 class Settings(BaseSettings):
+    """Безопасная конфигурация - улучшенная версия без смены структуры"""
+    
     model_config = SettingsConfigDict(
-        env_file=str(_env_file),
+        env_file=".env",  # Просто имя файла, без сложного поиска
         env_file_encoding='utf-8',
         case_sensitive=False,
         protected_namespaces=('settings_',),
+        extra='ignore',  # Игнорируем лишние переменные
     )
     
-    # MongoDB — с значениями по умолчанию
-    mongodb_url: str = "mongodb://root:example@mongodb:27017"
-    database_name: str = "wagon_db" 
+    # === Окружение ===
+    app_env: Literal["dev", "staging", "production"] = Field(
+        default="dev", 
+        env="APP_ENV"
+    )
     
-    # API
-    api_title: str = "Wagon ML API" 
-    api_version: str = "1.0.0" 
-    debug: bool = False
+    # === MongoDB (безопасно) ===
+    mongodb_user: str = Field(default="root", env="MONGODB_USER")
+    mongodb_password: SecretStr = Field(..., env="MONGODB_PASSWORD")  # Обязательное поле!
+    mongodb_host: str = Field(default="localhost", env="MONGODB_HOST")
+    mongodb_port: int = Field(default=27017, env="MONGODB_PORT")
+    database_name: str = Field(default="wagon_db", env="DATABASE_NAME")
     
-    # Загрузка файлов
-    max_upload_size: int = 52428800
+    # === API ===
+    api_title: str = Field(default="Wagon ML API", env="API_TITLE")
+    api_version: str = Field(default="1.0.0", env="API_VERSION")
+    debug: bool = Field(default=False, env="DEBUG")
     
-    # ML-модели — можно сделать необязательными с заглушками
-    model1_path: str = "./NN_models/model-1.pt"
-    model2_path: str = "./NN_models/model-2.pt" 
-    model_timeout: int = 30 
-
-    # Сохранение фотографий от Model-1
-    output_model1_path: str = "./result"
+    # === Безопасность ===
+    max_upload_size: int = Field(
+        default=52428800, 
+        le=104857600,  # максимум 100MB
+        env="MAX_UPLOAD_SIZE"
+    )
+    allowed_origins: list[str] = Field(
+        default=["http://localhost:3000"],
+        env="ALLOWED_ORIGINS"
+    )
     
-    # Логирование
-    log_level: str = "INFO"
+    # === ML модели ===
+    model1_path: Path = Field(default="./NN_models/model-1.pt", env="MODEL1_PATH")
+    model2_path: Path = Field(default="./NN_models/model-2.pt", env="MODEL2_PATH")
+    model_timeout: int = Field(default=30, ge=5, le=300, env="MODEL_TIMEOUT")
     
-    def validate_model_paths(self) -> dict:
-        results = {
-            "valid": True,
-            "model1": {"path": self.model1_path, "exists": False, "readable": False},
-            "model2": {"path": self.model2_path, "exists": False, "readable": False}
-        }
-        
-        for model_name, model_path in [("model1", self.model1_path), ("model2", self.model2_path)]:
-            path = Path(model_path)
-            logger.debug(f"Проверка пути {model_name}: {path.resolve()}")
-            
-            if path.exists():
-                results[model_name]["exists"] = True
-                try:
-                    with open(path, 'r') as f:
-                        pass
-                    results[model_name]["readable"] = True
-                    logger.info(f"✅ {model_name} найден: {path.resolve()} ({path.stat().st_size} bytes)")
-                except PermissionError:
-                    logger.warning(f"⚠️ {model_name} существует, но недоступен: {path.resolve()}")
-                    results["valid"] = False
+    # === Хранилище ===
+    output_model1_path: Path = Field(default="./result", env="OUTPUT_MODEL1_PATH")
+    
+    # === Логи ===
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = Field(
+        default="INFO", 
+        env="LOG_LEVEL"
+    )
+    
+    @property
+    def mongodb_url(self) -> str:
+        """Безопасное формирование URL (пароль не логируется)"""
+        password = self.mongodb_password.get_secret_value()
+        # Для логирования маскируем пароль
+        logger.debug(f"Connecting to MongoDB at {self.mongodb_host}:{self.mongodb_port}")
+        return f"mongodb://{self.mongodb_user}:{password}@{self.mongodb_host}:{self.mongodb_port}"
+    
+    @field_validator("model1_path", "model2_path", mode="before")
+    @classmethod
+    def resolve_paths(cls, v: str | Path) -> Path:
+        """Преобразует относительные пути в абсолютные (но без лишней логики)"""
+        path = Path(v)
+        if not path.is_absolute():
+            # Относительно корня проекта (где лежит app.py)
+            project_root = Path(__file__).parent.parent
+            path = project_root / path
+        return path.resolve()
+    
+    @field_validator("allowed_origins", mode="before")
+    @classmethod
+    def parse_allowed_origins(cls, v: str | list) -> list:
+        """Парсит список разрешенных origins из строки"""
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(",")]
+        return v
+    
+    def model_post_init(self, __context):
+        """Проверки после инициализации"""
+        # Проверка наличия моделей (только предупреждение, не ошибка)
+        for model_path in [self.model1_path, self.model2_path]:
+            if not model_path.exists():
+                logger.warning(f"⚠️ Model not found: {model_path}")
             else:
-                logger.warning(f"⚠️ {model_name} не найден: {path.resolve()}")
-                results["valid"] = False
+                logger.info(f"✅ Model found: {model_path} ({model_path.stat().st_size} bytes)")
         
-        return results
+        # Проверка режима production
+        if self.app_env == "production" and self.debug:
+            raise ValueError("DEBUG mode cannot be True in production!")
+        
+        # Проверка безопасности в production
+        if self.app_env == "production" and Path(".env").exists():
+            logger.warning("⚠️ .env file exists in production - not recommended!")
 
-
-settings = Settings()
+# Создаем глобальный экземпляр
+try:
+    settings = Settings()
+    logger.info(f"✅ Config loaded successfully (env: {settings.app_env})")
+except Exception as e:
+    logger.error(f"❌ Failed to load config: {e}")
+    raise

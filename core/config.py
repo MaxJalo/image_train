@@ -6,9 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class Settings(BaseSettings):
-    """Безопасная конфигурация - улучшенная версия без смены структуры"""
-    
+class Settings(BaseSettings):    
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding='utf-8',
@@ -17,25 +15,25 @@ class Settings(BaseSettings):
         extra='ignore',
     )
     
-    # === Окружение ===
+
     app_env: Literal["dev", "staging", "production"] = Field(
         default="dev", 
         env="APP_ENV"
     )
     
-    # === MongoDB (безопасно) ===
+
     mongodb_user: str = Field(default="root", env="MONGODB_USER")
     mongodb_password: SecretStr = Field(..., env="MONGODB_PASSWORD")
     mongodb_host: str = Field(default="localhost", env="MONGODB_HOST")
     mongodb_port: int = Field(default=27017, env="MONGODB_PORT")
     database_name: str = Field(default="wagon_db", env="DATABASE_NAME")
     
-    # === API ===
+
     api_title: str = Field(default="Wagon ML API", env="API_TITLE")
     api_version: str = Field(default="1.0.0", env="API_VERSION")
     debug: bool = Field(default=False, env="DEBUG")
     
-    # === Безопасность ===
+
     max_upload_size: int = Field(
         default=52428800, 
         le=104857600,
@@ -46,15 +44,15 @@ class Settings(BaseSettings):
         env="ALLOWED_ORIGINS"
     )
     
-    # === ML модели ===
+
     model1_path: Path = Field(default="./NN_models/model-1.pt", env="MODEL1_PATH")
     model2_path: Path = Field(default="./NN_models/model-2.pt", env="MODEL2_PATH")
     model_timeout: int = Field(default=30, ge=5, le=300, env="MODEL_TIMEOUT")
     
-    # === Хранилище ===
+
     output_model1_path: Path = Field(default="./result", env="OUTPUT_MODEL1_PATH")
     
-    # === Логи ===
+
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = Field(
         default="INFO", 
         env="LOG_LEVEL"

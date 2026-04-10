@@ -297,8 +297,8 @@ ML микросервис для классификации, детекции и
 
 ### 1. Клонировать репозиторий
 ```bash
-git clone <your-repo-url>
-cd <project-folder>
+git clone https://github.com/MaxJalo/image_train
+cd image_train
 ```
 2. Установить Python 3.10
 ```bash

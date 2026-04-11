@@ -1,31 +1,68 @@
+# Виртуальное окружение
+.venv/
+venv/
+env/
+
+# Python кэш
+__pycache__/
+*.pyc
+*.pyo
+
+# ML модели (большие файлы)
+NN_models/
+*.pt
+*.pth
+
+# Результаты обработки
+photo_aggregate/
+results/
+uploads/
+temp/
+
+# Логи
+logs/
+*.log
+test_results.txt
+test_full_output.txt
+
+# IDE
+.vscode/
+.idea/
+
+# Тесты и покрытие
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.xml
+
+# Type checking
+.mypy_cache/
+.ruff_cache/
+
+# Секреты и конфиги
+.env
+.env.local
+.env.example  # если не нужен в репозитории
+
+# Airflow
+airflow/
+airflow.db
+airflow.cfg
+webserver_config.py
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Другое
 TESTS_SUMMARY.py
-Makefile
-NN_models/model-1.pt
-NN_models/model-2.pt
-__pycache__/.gitkeep
-__pycache__/app.cpython-310.pyc
-.vscode/settings.json
-core/__pycache__/__init__.cpython-310.pyc
-core/__pycache__/config.cpython-310.pyc
-core/__pycache__/constants.cpython-310.pyc
-db/__pycache__/__init__.cpython-310.pyc
-db/__pycache__/repository.cpython-310.pyc
-models/__pycache__/__init__.cpython-310.pyc
-models/__pycache__/schemas.cpython-310.pyc
-routes/__pycache__/__init__.cpython-310.pyc
-routes/__pycache__/debug.cpython-310.pyc
-routes/__pycache__/health.cpython-310.pyc
-routes/__pycache__/wagon.cpython-310.pyc
-services/__pycache__/__init__.cpython-310.pyc
-services/__pycache__/aggregator.cpython-310.pyc
-services/__pycache__/background_process.cpython-310.pyc
-services/__pycache__/classifier.cpython-310.pyc
-services/__pycache__/detector.cpython-310.pyc
-services/__pycache__/job_manager.cpython-310.pyc
-services/__pycache__/model_loader.cpython-310.pyc
-services/__pycache__/upload_handler.cpython-310.pyc
 examples.py
-.vscode
+Makefile
 test_results.txt
 test_full_output.txt
 __pycache__
@@ -41,3 +78,4 @@ __pycache__/
 .DS_Store
 photo_aggregate/
 results/
+test_full_output.

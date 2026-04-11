@@ -1,6 +1,6 @@
 # (upload_handler)
 
-import logging
+import logging 
 import tempfile
 import shutil
 import zipfile
@@ -180,11 +180,11 @@ class UploadHandler:
             return False, f"Тип файла не поддерживается: {file_ext}. Поддерживаемые: {', '.join(ALLOWED_EXTENSIONS)}"
         
         # Проверка размера
-        file_size = await file.seek(0)
+        file.file.seek(0, io.SEEK_END)
+        file_size = file.file.tell()
+        await file.seek(0)
         if file_size > MAX_FILE_SIZE:
             return False, f"Размер файла превышает лимит: {file_size / 1024 / 1024:.1f} MB > {MAX_FILE_SIZE / 1024 / 1024:.0f} MB"
-        
-        await file.seek(0)
         
         # Проверка что это реально изображение
         try:

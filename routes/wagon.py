@@ -64,7 +64,7 @@ async def upload_zip_file(
         
         logger.info(f"✅ Задание {job_id} отправлено на обработку")
         
-        return aggregator.get_batch_results(batch_id)
+        return await aggregator.get_batch_results(batch_id)
         
     except HTTPException:
         raise

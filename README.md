@@ -21,7 +21,6 @@ microservise/
 │   ├── classifier.py      ⭐ Model-1: Классификация и разделение вагонов
 │   ├── detector.py        ⭐ Model-2: Детекция признаков YOLO
 │   ├── aggregator.py      ⭐ MongoDB: Агрегация результатов
-│   ├── storage.py         ⭐ File Storage: Управление photo_aggregate
 │   └── model_loader.py    (вспомогательный)
 │
 ├── routes/
@@ -37,7 +36,7 @@ microservise/
 │   ├── config.py          (Configuration)
 │   └── constants.py       (Constants)
 │
-├── photo_aggregate/       ⭐ Auto-generated storage for wagon photos
+├── photo_aggregate/       ⭐ Auto-generated storage for wagon photos (хранится локально)
 │   ├── wagon_1/
 │   ├── wagon_2/
 │   └── ...
@@ -169,7 +168,7 @@ result = await classifier.classify_and_aggregate(
 ### 2. Detector Service (`services/detector.py`)
 
 **Функции:**
-- `predict_model2()` - YOLO детекция сдного изображения
+- `predict_model2()` - YOLO детекция одного изображения
 - `process_wagon_photos()` - Обработка всех фото вагона
 
 **Логика:**
@@ -221,36 +220,6 @@ result = await aggregator.aggregate_wagon_results(
 ```
 
 ---
-
-### 4. Storage Service (`services/storage.py`)
-
-**Функции:**
-- `list_wagons()` - Все вагоны в photo_aggregate
-- `get_wagon_photos()` - Фотографии вагона
-- `get_wagon_stats()` - Статистика вагона
-- `copy_photo_to_wagon()` - Добавить фото
-- `delete_wagon()` - Удалить вагон
-- `cleanup_old_wagons()` - Очистить старые файлы
-
-**Логика:**
-```
-photo_aggregate/
-├── wagon_1/          ← get_wagon_photos("wagon_1")
-│   ├── photo_001.jpg ← first image
-│   ├── photo_003.jpg ← every 2nd image
-│   └── photo_050.jpg ← last image
-└── wagon_2/
-```
-
-**Пример:**
-```python
-photos = storage.get_wagon_photos("wagon_1")
-stats = storage.get_all_stats()
-storage.cleanup_old_wagons(days=30)
-```
-
----
-
 ## 💾 MongoDB Структура
 
 ### PhotoDocument (photos коллекция)
@@ -320,134 +289,43 @@ storage.cleanup_old_wagons(days=30)
 
 ---
 
-## 🚀 Быстрый старт
+# Wagon ML Pipeline
 
-### 1. Классификация (Model-1)
+ML микросервис для классификации, детекции и агрегации данных о вагонах.
+
+## Быстрый старт
+
+### 1. Клонировать репозиторий
 ```bash
-curl -X POST "http://localhost:8000/api/ml/classify-folder?folder_path=/photos"
+git clone https://github.com/MaxJalo/image_train
+cd image_train
 ```
-
-**Результат:** Фотографии разделены в `photo_aggregate/wagon_1/`, `wagon_2/`, etc.
-
-### 2. Детекция (Model-2)
+2. Установить Python 3.10
 ```bash
-curl -X POST "http://localhost:8000/api/ml/detect-wagon/wagon_1"
-curl -X POST "http://localhost:8000/api/ml/detect-wagon/wagon_2"
+# Ubuntu/Debian
+sudo apt update
+sudo apt install python3.10 python3.10-venv
+
+# Или через pyenv
+pyenv install 3.10
+pyenv local 3.10
 ```
-
-**Результат:** Данные в MongoDB/photos
-
-### 3. Агрегация
+3. Установить uv
 ```bash
-curl -X POST "http://localhost:8000/api/ml/aggregate-wagon/wagon_1"
-curl -X POST "http://localhost:8000/api/ml/aggregate-wagon/wagon_2"
+curl -LsSf https://astral.sh/uv/install.sh | sh
+echo "$HOME/.local/bin" >> $PATH
 ```
-
-**Результат:** Финальные вердикты в MongoDB/wagon_aggregates
-
-### 4. Получить результаты
+4. Установить зависимости
 ```bash
-curl -X GET "http://localhost:8000/api/ml/wagon-result/wagon_1"
-curl -X GET "http://localhost:8000/api/ml/batch-results/batch_001"
+uv venv --python 3.10
+source .venv/bin/activate
+uv sync
 ```
-
----
-
-## 📚 Примеры кода
-
-### Полный пайплайн в Python
-```python
-from microservise.services import classifier, detector, aggregator, storage
-
-# 1. Классификация
-result = await classifier.classify_and_aggregate("/photos", "batch_001")
-
-# 2. Для каждого вагона:
-for wagon_id in result["wagons"]:
-    # Детекция
-    photos = storage.get_wagon_photos(wagon_id)
-    photo_paths = [Path(p["path"]) for p in photos]
-    detect = await detector.process_wagon_photos(wagon_id, photo_paths, 0, "batch_001")
-    
-    # Агрегация
-    agg = await aggregator.aggregate_wagon_results(wagon_id, "batch_001")
-    print(f"{wagon_id}: {agg['final_side']}")
-
-# 3. Статистика
-stats = storage.get_all_stats()
-print(f"Total: {stats['total_photos']} photos in {stats['total_wagons']} wagons")
-```
-
-### Примеры в `examples.py`
-```python
-# Запустить примеры
-python microservise/examples.py
-
-# Примеры доступны:
-# - example_full_pipeline()      # Полный пайплайн
-# - example_single_wagon()       # Один вагон
-# - example_storage_management() # Управление файлами
-# - example_queries()            # Запросы информации
-```
-
----
-
-## 🔍 Отладка
-
-### Проверить список вагонов
+5. Запустить тесты
 ```bash
-curl http://localhost:8000/api/ml/wagons
+pytest --cov=. --cov-report=xml
 ```
-
-### Проверить хранилище
+6. Запустить сервер
 ```bash
-curl http://localhost:8000/api/ml/aggregate-stats
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
-
-### Проверить результат вагона
-```bash
-curl http://localhost:8000/api/ml/wagon-result/wagon_1
-```
-
-### Проверить логи
-```bash
-tail -f app.log | grep wagon_1
-```
-
----
-
-## ✅ Функциональность
-
-- ✅ Model-1 классификация и разделение на вагоны
-- ✅ photo_aggregate хранилище для Model-1 выхода
-- ✅ Model-2 YOLO детекция признаков вагонов
-- ✅ MongoDB сохранение всех результатов
-- ✅ REST API для всех операций
-- ✅ Управление файлами (добавление, удаление, очистка)
-- ✅ Статистика и мониторинг
-- ✅ Примеры и документация
-
----
-
-## 📖 Документация
-
-- 📄 [MICROSERVICES_OVERVIEW.md](../docs/MICROSERVICES_OVERVIEW.md) - Архитектурный обзор
-- 📄 [MICROSERVICES_ARCHITECTURE.md](../docs/MICROSERVICES_ARCHITECTURE.md) - Полное описание API
-- 📄 [MICROSERVICES_QUICK_START.md](../docs/MICROSERVICES_QUICK_START.md) - Быстрый старт
-- 📄 [MICROSERVICES_DEPLOYMENT.md](../MICROSERVICES_DEPLOYMENT.md) - Развертывание
-
----
-
-## 📝 Заметки
-
-- Каждый микросервис полностью независим
-- Все данные сохраняются в MongoDB для истории
-- photo_aggregate служит как буфер между Model-1 и Model-2
-- API использует стандартные HTTP coды ошибок
-- Полное логирование на всех уровнях
-
----
-
-**Version:** 1.0.0  
-**Status:** ✅ Production Ready  
-**Date:** 26 February 2026

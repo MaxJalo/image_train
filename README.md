@@ -310,23 +310,16 @@ sudo apt install python3.10 python3.10-venv
 pyenv install 3.10
 pyenv local 3.10
 ```
-3. Установить Poetry
+3. Установить uv
 ```bash
-curl -sSL https://install.python-poetry.org | python3 -
+curl -LsSf https://astral.sh/uv/install.sh | sh
 echo "$HOME/.local/bin" >> $PATH
 ```
 4. Установить зависимости
 ```bash
-poetry install
-
-# Установить PyTorch с CUDA поддержкой
-pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu124
-
-# Установить остальные зависимости
-pip install fastapi uvicorn pydantic pydantic-settings python-dotenv beanie motor pymongo ultralytics pillow numpy python-multipart
-
-# Установить инструменты для разработки
-pip install pytest pytest-asyncio black flake8 pytest-cov
+uv venv --python 3.10
+source .venv/bin/activate
+uv sync
 ```
 5. Запустить тесты
 ```bash

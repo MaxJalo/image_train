@@ -24,7 +24,7 @@ jobs:
           version: "latest"
 
       - name: Sync dependencies with uv.lock
-        run: uv pip sync uv.lock
+        run: uv sync
 
       - name: Install dev dependencies
         run: uv pip install --system pytest pytest-asyncio pytest-cov black flake8 ruff

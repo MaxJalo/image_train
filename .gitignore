@@ -33,6 +33,7 @@ NN_models
 .venv
 .pytest_cache
 photo_aggregate
+airflow/logs/
 # просто сообщение для push
 # git add poetry.lock
 # git commit -m "(poetry) update dependencies"

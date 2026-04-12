@@ -46,10 +46,10 @@ jobs:
           uv pip install --system black flake8 ruff
 
       - name: Run black
-        run: black --check microservise/
+        run: black --check .
 
       - name: Run ruff
-        run: ruff check microservise/
+        run: ruff check .
 
       - name: Run flake8
-        run: flake8 microservise/ --max-line-length=100
+        run: flake8 . --max-line-length=100 --exclude=.venv,__pycache__,airflow

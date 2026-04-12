@@ -3,7 +3,6 @@ version: '3.8'
 x-airflow-common:
   &airflow-common
   image: apache/airflow:2.7.0
-  user: "${AIRFLOW_UID:-50000}:0"
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -14,7 +13,7 @@ x-airflow-common:
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'false'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
-    _PIP_ADDITIONAL_REQUIREMENTS: ''
+    DOCKER_HOST: unix://var/run/docker.sock  # Используйте Unix socket
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
@@ -22,7 +21,8 @@ x-airflow-common:
     - ./plugins:/opt/airflow/plugins
     - ./results:/opt/airflow/results
     - ./backup:/opt/airflow/backup
-    - //var/run/docker.sock:/var/run/docker.sock
+    - /var/run/docker.sock:/var/run/docker.sock  # Монтируйте Docker socket
+  user: "50000:0"  # Используйте пользователя airflow
   depends_on:
     &airflow-common-depends-on
     redis:

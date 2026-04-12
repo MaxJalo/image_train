@@ -3,7 +3,6 @@ from airflow import DAG
 from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
-from airflow.exceptions import AirflowSkipException
 from docker.types import Mount
 import os
 
@@ -21,7 +20,7 @@ def check_idempotency(batch_id, **kwargs):
     results_path = f'/opt/airflow/results/{batch_id}.json'
     if os.path.exists(results_path):
         print(f"Batch {batch_id} already processed. Skipping.")
-        raise AirflowSkipException(f"Batch {batch_id} already processed")
+        raise Exception(f"Batch {batch_id} already processed")
     return True
 
 dag = DAG(
@@ -44,7 +43,8 @@ process_batch_task = DockerOperator(
     image='wagon-batch-processor:latest',
     command='--batch-id {{ ds_nodash }}',
     auto_remove=True,
-    docker_url="unix://var/run/docker.sock",
+    docker_url="unix://var/run/docker.sock",  # Используйте Unix socket, если вы монтируете его
+    docker_conn_id=None,  # Не используйте соединение, если не нужно
     network_mode="bridge",
     mounts=[
         Mount(source='C:/Users/Asus/image_train/airflow/results', target='/app/results', type='bind'),

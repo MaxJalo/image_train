@@ -1,13 +1,13 @@
-import pytest 
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
+
 from PIL import Image
 
-from services import detector
 from models.schemas import Model2Output
+from services import detector
 
 
 class TestDetectorModule:
-    @patch('services.detector._get_model2')
+    @patch("services.detector._get_model2")
     def test_predict_model2_fallback(self, mock_get_model2, sample_image):
         mock_get_model2.return_value = "FALLBACK"
 
@@ -17,7 +17,7 @@ class TestDetectorModule:
         assert result.side == "left"
         assert result.confidence == 0.5
 
-    @patch('services.detector._get_model2')
+    @patch("services.detector._get_model2")
     def test_predict_model2_with_mock_yolo_result(self, mock_get_model2, sample_image):
         class FakeBox:
             def __init__(self, cls, conf):
@@ -55,17 +55,12 @@ class TestDetectorModule:
 
         def fake_predict(image):
             return Model2Output(
-                brake_rod=0.5,
-                rod_nose=0.4,
-                crane=0.0,
-                tank=0.0,
-                side="right",
-                confidence=0.9
+                brake_rod=0.5, rod_nose=0.4, crane=0.0, tank=0.0, side="right", confidence=0.9
             )
 
         monkeypatch.setattr(detector, "predict_model2", fake_predict)
 
-        result = __import__('asyncio').run(
+        result = __import__("asyncio").run(
             detector.detect_wagon_sides({"wagon_1": [(image_path, 1)]})
         )
 

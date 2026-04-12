@@ -1,13 +1,14 @@
-import asyncio 
+import asyncio
+from unittest.mock import MagicMock, patch
+
 import pytest
 import torch
-from unittest.mock import MagicMock, patch
 
 from services import classifier
 
 
 class TestClassifierFunctions:
-    @patch('services.classifier._get_model1')
+    @patch("services.classifier._get_model1")
     def test_predict_model1_fallback(self, mock_get_model1):
         mock_get_model1.return_value = "FALLBACK"
 
@@ -17,7 +18,7 @@ class TestClassifierFunctions:
         assert confidence == 0.5
         mock_get_model1.assert_called_once()
 
-    @patch('services.classifier._get_model1')
+    @patch("services.classifier._get_model1")
     def test_predict_model1_with_mock_model(self, mock_get_model1):
         class FakeModel:
             def parameters(self):
@@ -31,8 +32,9 @@ class TestClassifierFunctions:
 
         mock_get_model1.return_value = FakeModel()
 
-        image = torch.zeros((3, 300, 300))
+        torch.zeros((3, 300, 300))
         from PIL import Image
+
         pil_image = Image.new("RGB", (300, 300))
 
         is_wagon, confidence = classifier.predict_model1(pil_image)
@@ -40,8 +42,10 @@ class TestClassifierFunctions:
         assert confidence >= 0.5
         assert isinstance(is_wagon, bool)
 
-    @patch('services.classifier._get_model1')
-    def test_predict_model1_converts_grayscale_images(self, mock_get_model1, sample_grayscale_image):
+    @patch("services.classifier._get_model1")
+    def test_predict_model1_converts_grayscale_images(
+        self, mock_get_model1, sample_grayscale_image
+    ):
         class FakeModel:
             def parameters(self):
                 return iter([torch.nn.Parameter(torch.zeros(1))])
@@ -59,7 +63,7 @@ class TestClassifierFunctions:
         assert confidence >= 0.0
         assert is_wagon is True
 
-    @patch('services.classifier._get_model1')
+    @patch("services.classifier._get_model1")
     def test_predict_model1_handles_non_tensor_output(self, mock_get_model1, sample_image):
         class FakeModel:
             def parameters(self):
@@ -86,4 +90,4 @@ class TestClassifierFunctions:
 
     def test_classify_and_group_wagons_missing_folder(self):
         with pytest.raises(FileNotFoundError):
-            asyncio.run(classifier.classify_and_group_wagons('missing_folder'))
+            asyncio.run(classifier.classify_and_group_wagons("missing_folder"))

@@ -1,4 +1,4 @@
 # (routes)
-from . import wagon, health, debug
+from . import debug, health, wagon
 
-__all__ = ['wagon', 'health', 'debug'] 
+__all__ = ["wagon", "health", "debug"]

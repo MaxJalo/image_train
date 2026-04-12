@@ -1,12 +1,12 @@
-
 # (app) main application file
 import logging
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from core.config import Settings
-from routes import wagon, health, debug
+from routes import debug, health, wagon
 from services.model_loader import load_model
 
 # Инициализация логирования
@@ -29,9 +29,9 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"❌ Ошибка при загрузке моделей: {str(e)}")
         raise
-    
+
     yield
-    
+
     # Shutdown
     logger.info("🛑 Завершение приложения...")
 
@@ -41,7 +41,7 @@ app = FastAPI(
     title=settings.api_title,
     version=settings.api_version,
     description="API для обработки фотографий вагонов с использованием ML моделей",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # CORS middleware
@@ -66,16 +66,11 @@ async def root():
         "app_title": settings.api_title,
         "version": settings.api_version,
         "status": "running",
-        "documentation": "/docs"
+        "documentation": "/docs",
     }
 
 
 if __name__ == "__main__":
     import uvicorn
-    
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=8000,
-        log_level="info"
-    )
+
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")

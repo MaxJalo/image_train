@@ -1,7 +1,7 @@
-import pytest 
+import pytest
 from pydantic import ValidationError
 
-from models.schemas import Model2Output, FinalVerdictModel
+from models.schemas import FinalVerdictModel, Model2Output
 
 
 def test_model2_output_validates_correctly():

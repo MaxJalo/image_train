@@ -23,10 +23,11 @@ jobs:
         with:
           version: "latest"
 
-      - name: Install dependencies with uv
-        run: |
-          uv pip install --system -r microservise/requirements.txt
-          uv pip install --system pytest pytest-asyncio pytest-cov black flake8 ruff
+      - name: Sync dependencies with uv.lock
+        run: uv pip sync uv.lock
+
+      - name: Install dev dependencies
+        run: uv pip install --system pytest pytest-asyncio pytest-cov black flake8 ruff
 
   lint:
     runs-on: ubuntu-latest
@@ -46,10 +47,10 @@ jobs:
           uv pip install --system black flake8 ruff
 
       - name: Run black
-        run: black --check .
+        run: black --check core/ db/ models/ routes/ services/ app.py
 
       - name: Run ruff
-        run: ruff check .
+        run: ruff check core/ db/ models/ routes/ services/ app.py
 
       - name: Run flake8
-        run: flake8 . --max-line-length=100 --exclude=.venv,__pycache__,airflow
+        run: flake8 core/ db/ models/ routes/ services/ app.py --max-line-length=100

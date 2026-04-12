@@ -25,7 +25,7 @@ async def process_and_save_batch(
 
     db_ok = await ensure_db_connection()
     if not db_ok:
-        logger.error(f"❌ Не удалось подключиться к MongoDB")
+        logger.error("❌ Не удалось подключиться к MongoDB")
         return None
 
     try:
@@ -34,7 +34,7 @@ async def process_and_save_batch(
         total_wagons = len(wagon_results)
         processed_photos = sum(r["processed_photos"] for r in wagon_results.values())
 
-        logger.info(f"   📊 Статистика:")
+        logger.info("   📊 Статистика:")
         logger.info(f"      Вагонов: {total_wagons}")
         logger.info(f"      Всего фото: {total_photos}")
         logger.info(f"      Обработано: {processed_photos}")

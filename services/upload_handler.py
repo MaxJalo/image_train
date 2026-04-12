@@ -141,7 +141,7 @@ class UploadHandler:
         for file_info in extracted_files:
             depth_distribution[file_info.depth] += 1
 
-        logger.info(f"\n📊 Распределение по глубине вложенности:")
+        logger.info("\n📊 Распределение по глубине вложенности:")
         for depth in sorted(depth_distribution.keys()):
             count = depth_distribution[depth]
             percentage = (count / len(extracted_files)) * 100
@@ -159,7 +159,7 @@ class UploadHandler:
                 count = camera_ids[cam_id]
                 logger.info(f"   Camera {cam_id}: {count} файлов")
         else:
-            logger.info(f"\n🎥 Camera ID не найдены ни в одном пути")
+            logger.info("\n🎥 Camera ID не найдены ни в одном пути")
 
         # Найденные train_hash
         train_hashes = defaultdict(int)
@@ -173,7 +173,7 @@ class UploadHandler:
                 count = train_hashes[hash_id]
                 logger.info(f"   {hash_id}: {count} файлов")
         else:
-            logger.info(f"\n🚂 Train Hash не найдены ни в одном пути")
+            logger.info("\n🚂 Train Hash не найдены ни в одном пути")
 
     @staticmethod
     async def validate_image_file(file: UploadFile) -> Tuple[bool, Optional[str]]:
@@ -183,7 +183,8 @@ class UploadHandler:
         if file_ext not in ALLOWED_EXTENSIONS:
             return (
                 False,
-                f"Тип файла не поддерживается: {file_ext}. Поддерживаемые: {', '.join(ALLOWED_EXTENSIONS)}",
+                f"Тип файла не поддерживается:\
+                 {file_ext}. Поддерживаемые: {', '.join(ALLOWED_EXTENSIONS)}",
             )
 
         # Проверка размера
@@ -193,7 +194,8 @@ class UploadHandler:
         if file_size > MAX_FILE_SIZE:
             return (
                 False,
-                f"Размер файла превышает лимит: {file_size / 1024 / 1024:.1f} MB > {MAX_FILE_SIZE / 1024 / 1024:.0f} MB",
+                f"Размер файла превышает лимит:\
+                 {file_size / 1024 / 1024:.1f} MB > {MAX_FILE_SIZE / 1024 / 1024:.0f} MB",
             )
 
         # Проверка что это реально изображение
@@ -372,7 +374,8 @@ class UploadHandler:
                     # Валидация по размеру
                     file_size = img_path.stat().st_size
                     if file_size > MAX_FILE_SIZE:
-                        msg = f"Файл слишком большой: {img_path.name} ({file_size / 1024 / 1024:.1f} MB)"
+                        msg = f"Файл слишком большой:\
+                         {img_path.name} ({file_size / 1024 / 1024:.1f} MB)"
                         logger.warning(f"⚠️ {msg}")
                         validation_errors.append(msg)
                         continue
@@ -409,7 +412,7 @@ class UploadHandler:
                     continue
 
             if not extracted_files:
-                error = f"Не удалось обработать ни одно изображение из архива"
+                error = "Не удалось обработать ни одно изображение из архива"
                 if validation_errors:
                     error += f". Ошибки: {', '.join(validation_errors[:3])}"
                 logger.error(f"❌ {error}")

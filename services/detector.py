@@ -33,7 +33,7 @@ def _get_model2():
         logger.debug(f"🔄 Инициализация Model-2 из {settings.model2_path}")
         try:
             _model2_cache = load_model(settings.model2_path)
-            logger.info(f"✅ Model-2 успешно загружена")
+            logger.info("✅ Model-2 успешно загружена")
         except Exception as e:
             logger.error(f"❌ Ошибка загрузки Model-2: {str(e)}")
             logger.warning("⚠️ Model-2 используется в режиме заглушки")
@@ -51,7 +51,7 @@ def predict_model2(image: Image.Image) -> Model2Output:
     Returns:
         Model2Output: Результаты детекции с признаками и стороной вагона
     """
-    logger.debug(f"▶️ Начало вывода Model-2 (YOLO)")
+    logger.debug("▶️ Начало вывода Model-2 (YOLO)")
     logger.debug(f"   Размер изображения: {image.size}, Режим: {image.mode}")
 
     try:
@@ -64,11 +64,11 @@ def predict_model2(image: Image.Image) -> Model2Output:
                 brake_rod=0.5, rod_nose=0.5, crane=0.5, tank=0.5, side="left", confidence=0.5
             )
 
-        logger.debug(f"   Конвертирование изображения в RGB...")
+        logger.debug("   Конвертирование изображения в RGB...")
         if image.mode != "RGB":
             image = image.convert("RGB")
 
-        logger.debug(f"   Запуск YOLO детекции...")
+        logger.debug("   Запуск YOLO детекции...")
         results = model(image)
         logger.debug(f"   YOLO вернул {len(results)} результат(ов)")
 
@@ -118,7 +118,8 @@ def predict_model2(image: Image.Image) -> Model2Output:
         overall_confidence = total_confidence / detection_count if detection_count > 0 else 0.0
 
         logger.info(
-            f"✅ Model-2 result: side={side}, confidence={overall_confidence:.4f}, features={features}"
+            f"✅ Model-2 result: side={side},\
+             confidence={overall_confidence:.4f}, features={features}"
         )
 
         return Model2Output(
@@ -150,11 +151,11 @@ def _determine_side(image: Image.Image, detected_classes: Dict[str, list]) -> st
     Returns:
         str: "left" или "right"
     """
-    logger.debug(f"▶️ Определение стороны вагона")
+    logger.debug("▶️ Определение стороны вагона")
     width = image.width if hasattr(image, "width") else 640
 
     if detected_classes:
-        logger.debug(f"   Найдены классы, устанавливаю 'left'")
+        logger.debug("   Найдены классы, устанавливаю 'left'")
         return "left"
 
     # Использовать ширину как эвристику если нет детекции

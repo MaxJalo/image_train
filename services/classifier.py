@@ -29,7 +29,7 @@ def _get_model1():
         logger.debug(f"🔄 Инициализация Model-1 из {settings.model1_path}")
         try:
             _model1_cache = load_model(settings.model1_path)
-            logger.info(f"✅ Model-1 успешно загружена")
+            logger.info("✅ Model-1 успешно загружена")
         except Exception as e:
             logger.error(f"❌ Ошибка загрузки Model-1: {str(e)}")
             logger.warning("⚠️ Model-1 используется в режиме заглушки")
@@ -38,7 +38,7 @@ def _get_model1():
 
 
 def predict_model1(image: Image.Image) -> Tuple[bool, float]:
-    logger.debug(f"▶️ Начало вывода Model-1")
+    logger.debug("▶️ Начало вывода Model-1")
     logger.debug(f"   Размер изображения: {image.size}, Режим: {image.mode}")
 
     try:
@@ -74,7 +74,7 @@ def predict_model1(image: Image.Image) -> Tuple[bool, float]:
         img_tensor = img_tensor.to(device)
         logger.debug(f"   Форма тензора: {img_tensor.shape}, устройство: {device}")
 
-        logger.debug(f"   Запуск вывода Model-1...")
+        logger.debug("   Запуск вывода Model-1...")
         # Запуск вывода
         model.eval()
         with torch.no_grad():
@@ -104,7 +104,7 @@ def predict_model1(image: Image.Image) -> Tuple[bool, float]:
 
 async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Path, int]]]:
 
-    logger.info(f"🚂 Начало классификации и группирования по вагонам")
+    logger.info("🚂 Начало классификации и группирования по вагонам")
     logger.info(f"📂 Путь к папке: {folder_path}")
 
     folder = Path(folder_path)
@@ -135,7 +135,7 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
 
     logger.info(f"📸 Найдено {len(image_files)} изображений (рекурсивный поиск)")
     if image_files:
-        logger.debug(f"   Примеры найденных файлов:")
+        logger.debug("   Примеры найденных файлов:")
         for img in image_files[:5]:
             logger.debug(f"      {img.relative_to(folder)}")
 
@@ -173,13 +173,16 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
                 # Фильтрация по уверенности
                 if confidence < CONFIDENCE_THRESHOLD:
                     logger.warning(
-                        f"⚠️ ОТБРАКОВКА: {img_path.name} (confidence={confidence:.4f} < {CONFIDENCE_THRESHOLD})"
+                        f"⚠️ ОТБРАКОВКА:\
+                     {img_path.name} (confidence={confidence:.4f}\
+                     < {CONFIDENCE_THRESHOLD})"
                     )
                     rejected_count += 1
                     continue
                 # Логирование предсказания и текущего wagon_id
                 logger.debug(
-                    f"📸 {img_path.name} → {class_name} (confidence={confidence:.3f}), current_wagon={current_wagon_id}"
+                    f"📸 {img_path.name} → {class_name}\
+                     (confidence={confidence:.3f}), current_wagon={current_wagon_id}"
                 )
 
                 if class_name:
@@ -209,7 +212,8 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
                         count_photos = len(current_wagon_photos)
                         if count_photos < 3:
                             logger.warning(
-                                f"⚠️ Вагон #{current_wagon_id} слишком короткий ({count_photos}<3), отбрасывается"
+                                f"⚠️ Вагон #{current_wagon_id}\
+                                 слишком короткий ({count_photos}<3), отбрасывается"
                             )
                             # Отбраковываем
                         else:
@@ -235,13 +239,14 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
             count_photos = len(current_wagon_photos)
             if count_photos < 3:
                 logger.warning(
-                    f"⚠️ Вагон #{current_wagon_id} слишком короткий ({count_photos}<3), отбрасывается"
+                    f"⚠️ Вагон #{current_wagon_id}\
+                     слишком короткий ({count_photos}<3), отбрасывается"
                 )
             else:
                 wagon_groups[current_wagon_id] = list(current_wagon_photos)
                 logger.info(f"✅ Вагон #{current_wagon_id} завершен, фото: {count_photos}")
 
-        logger.info(f"✅ Группирование завершено:")
+        logger.info("✅ Группирование завершено:")
         logger.info(f"   Обработано: {processed_count}")
         logger.info(f"   Отбракована: {rejected_count}")
         logger.info(f"   Вагонов: {len(wagon_groups)}")

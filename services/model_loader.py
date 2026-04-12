@@ -88,10 +88,11 @@ def _load_mobilenet_model(model_path: str) -> Any:
         model.classifier[3] = nn.Linear(model.classifier[3].in_features, num_classes)
         model = model.to(device)
 
-        logger.debug(f"Загрузка весов state_dict в модель")
+        logger.debug("Загрузка весов state_dict в модель")
         result = model.load_state_dict(state_dict, strict=False)
         logger.debug(
-            f"State dict загружен: {len(result.missing_keys)} недостающих ключей, {len(result.unexpected_keys)} неожиданных ключей"
+            f"State dict загружен: {len(result.missing_keys)}\
+             недостающих ключей, {len(result.unexpected_keys)} неожиданных ключей"
         )
 
         model.eval()
@@ -128,7 +129,8 @@ def _load_pytorch_model(model_path: str) -> Any:
             return model
         except Exception as yolo_error:
             logger.debug(
-                f"Загрузчик YOLO не удался ({type(yolo_error).__name__}), попытка generic torch.load"
+                f"Загрузчик YOLO не удался\
+                 ({type(yolo_error).__name__}), попытка generic torch.load"
             )
             loaded = torch.load(model_path, map_location=device, weights_only=False)
 
@@ -138,7 +140,8 @@ def _load_pytorch_model(model_path: str) -> Any:
                     return _load_mobilenet_model(model_path)
                 except Exception as mobilenet_error:
                     logger.error(
-                        f"Ошибка загрузки MobileNet: {type(mobilenet_error).__name__}: {mobilenet_error}"
+                        f"Ошибка загрузки MobileNet:\
+                         {type(mobilenet_error).__name__}: {mobilenet_error}"
                     )
                     raise Exception(
                         f"Не удалось загрузить как state_dict MobileNet: {str(mobilenet_error)}"
@@ -164,7 +167,7 @@ def _load_pickle_model(model_path: str) -> Any:
         logger.debug(f"Открытие pickle файла: {model_path}")
         with open(model_path, "rb") as f:
             model = pickle.load(f)
-        logger.info(f"✅ Pickle модель успешно загружена")
+        logger.info("✅ Pickle модель успешно загружена")
         return model
     except Exception as e:
         logger.error(f"Ошибка загрузки Pickle модели: {type(e).__name__}: {str(e)}")
@@ -172,7 +175,6 @@ def _load_pickle_model(model_path: str) -> Any:
 
 
 def clear_cache():
-    global _model_cache
     count = len(_model_cache)
     _model_cache.clear()
     logger.info(f"🗑️ Кэш модели очищен ({count} модель(й) удалено)")

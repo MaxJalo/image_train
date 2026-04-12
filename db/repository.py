@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 async def ensure_db_connection() -> bool:
     try:
-        logger.debug(f"🔍 Проверка подключения MongoDB...")
+        logger.debug("🔍 Проверка подключения MongoDB...")
 
         # Пытались подключиться и проверь наличие коллекций
         client = AsyncIOMotorClient(settings.mongodb_url)
@@ -34,11 +34,11 @@ async def ensure_db_connection() -> bool:
             await init_beanie(
                 database=db, document_models=[PhotoDocument, WagonAggregateDocument, BatchDocument]
             )
-            logger.info(f"✅ MongoDB инициализирована с Beanie")
+            logger.info("✅ MongoDB инициализирована с Beanie")
         except RuntimeError as e:
             # Beanie уже инициализирована
             if "init_beanie" in str(e) or "already" in str(e):
-                logger.debug(f"   ℹ️ Beanie уже инициализирована")
+                logger.debug("   ℹ️ Beanie уже инициализирована")
             else:
                 raise
 

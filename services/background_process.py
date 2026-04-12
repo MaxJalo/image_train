@@ -47,7 +47,7 @@ async def process_job(
         JobManager.update_progress(job_id, 0, 10)
 
         # ============ STEP 1: Классификация (Model-1) ============
-        logger.info(f"⏳ Шаг 1: Классификация (Model-1) и группировка по вагонам...")
+        logger.info("⏳ Шаг 1: Классификация (Model-1) и группировка по вагонам...")
         try:
             wagon_groups = await classifier.classify_and_group_wagons(str(temp_dir))
 
@@ -67,7 +67,7 @@ async def process_job(
             return
 
         # ============ STEP 2: Детекция (Model-2) ============
-        logger.info(f"⏳ Шаг 2: Детекция (Model-2) и определение сторон...")
+        logger.info("⏳ Шаг 2: Детекция (Model-2) и определение сторон...")
         try:
             wagon_results = await detector.detect_wagon_sides(wagon_groups)
 
@@ -87,7 +87,7 @@ async def process_job(
             return
 
         # ============ STEP 3: Агрегация и сохранение в MongoDB ============
-        logger.info(f"⏳ Шаг 3: Сохранение результатов в MongoDB...")
+        logger.info("⏳ Шаг 3: Сохранение результатов в MongoDB...")
         try:
             # Создать batch_id на основе job_id
             batch_id = f"batch_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
@@ -103,7 +103,7 @@ async def process_job(
                 JobManager.fail_job(job_id, error)
                 return
 
-            logger.info(f"✅ Результаты сохранены в MongoDB")
+            logger.info("✅ Результаты сохранены в MongoDB")
             JobManager.update_progress(job_id, len(image_files), 95)
 
         except Exception as e:
@@ -124,13 +124,13 @@ async def process_job(
             "wagon_id": wagon_id,
         }
 
-        logger.info(f"✅ Результаты готовы:")
+        logger.info("✅ Результаты готовы:")
         logger.info(f"   Batch ID: {batch_id}")
         logger.info(f"   Вагонов: {len(wagon_results)}")
         logger.info(f"   Файлов: {len(image_files)}")
 
         # ============ STEP 5: Очистка временных файлов ============
-        logger.info(f"🗑️ Очистка временных файлов...")
+        logger.info("🗑️ Очистка временных файлов...")
         UploadHandler.cleanup_job_files(job_id)
 
         # ============ STEP 6: Завершить задание ============
@@ -147,5 +147,5 @@ async def process_job(
         try:
             if temp_dir:
                 UploadHandler.cleanup_job_files(job_id)
-        except:
+        except Exception:
             pass

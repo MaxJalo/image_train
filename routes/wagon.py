@@ -205,7 +205,8 @@ async def upload_multiple_files(
         return {
             "status": "success",
             "job_id": job_id,
-            "message": f"Принято {saved_count} файлов из {len(files)}. Задание добавлено в очередь обработки",
+            "message": f"Принято {saved_count} файлов\
+             из {len(files)}. Задание добавлено в очередь обработки",
             "files_received": len(files),
             "files_saved": saved_count,
             "camera_id": camera_id,
@@ -262,7 +263,8 @@ async def get_job_status_simple(job_id: str):
     # Определить сообщение о статусе
     status_messages = {
         JobStatus.PENDING: "Задание в очереди ожидания",
-        JobStatus.PROCESSING: f"Обработка... {job_info.processed_files}/{job_info.total_files} файлов",
+        JobStatus.PROCESSING: f"Обработка...\
+         {job_info.processed_files}/{job_info.total_files} файлов",
         JobStatus.COMPLETED: "Задание завершено успешно",
         JobStatus.FAILED: f"Ошибка: {job_info.error}",
     }

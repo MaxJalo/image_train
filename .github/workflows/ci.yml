@@ -45,14 +45,11 @@ jobs:
         run: |
           uv pip install --system black flake8 ruff
 
-      - name: Run black (format check) - non fatal
-        run: |
-          black --check microservise/ || echo "⚠️ Black formatting issues found (non-fatal)"
+      - name: Run black
+        run: black --check microservise/
 
-      - name: Run ruff (linter) - non fatal
-        run: |
-          ruff check microservise/ || echo "⚠️ Ruff issues found (non-fatal)"
+      - name: Run ruff
+        run: ruff check microservise/
 
-      - name: Run flake8 - non fatal
-        run: |
-          flake8 microservise/ --max-line-length=100 || echo "⚠️ Flake8 issues found (non-fatal)"
+      - name: Run flake8
+        run: flake8 microservise/ --max-line-length=100

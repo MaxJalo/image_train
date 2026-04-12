@@ -35,7 +35,7 @@ class JobInfo:
     processed_files: int
     result: Optional[Dict[str, Any]] = None
     error: Optional[str] = None
-    created_at: datetime = None
+    created_at: Optional[datetime] = None
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
 
@@ -65,7 +65,7 @@ class JobManager:
             "processed_files": 0,
             "result": None,
             "error": None,
-            "created_at": datetime.now().isoformat(),
+            "created_at": datetime.now(),
             "started_at": None,
             "completed_at": None,
         }
@@ -118,7 +118,7 @@ class JobManager:
         return True
 
     @staticmethod
-    def update_progress(job_id: str, processed_files: int, progress: int = None) -> bool:
+    def update_progress(job_id: str, processed_files: int, progress: Optional[int] = None) -> bool:
         """Обновить прогресс обработки"""
         if job_id not in _jobs_store:
             logger.error(f"❌ Задание не найдено: {job_id}")
@@ -206,7 +206,7 @@ def start_job(job_id: str) -> bool:
     return JobManager.start_job(job_id)
 
 
-def update_progress(job_id: str, processed_files: int, progress: int = None) -> bool:
+def update_progress(job_id: str, processed_files: int, progress: Optional[int] = None) -> bool:
     """Обновить прогресс"""
     return JobManager.update_progress(job_id, processed_files, progress)
 

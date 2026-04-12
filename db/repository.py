@@ -7,12 +7,7 @@ from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from core.config import settings
-from models.schemas import (
-    BatchDocument,
-    FinalVerdictModel,
-    PhotoDocument,
-    WagonAggregateDocument,
-)
+from models.schemas import BatchDocument, FinalVerdictModel, PhotoDocument, WagonAggregateDocument
 
 logger = logging.getLogger(__name__)
 

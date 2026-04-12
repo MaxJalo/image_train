@@ -2,6 +2,7 @@
 import logging
 from contextlib import asynccontextmanager
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -14,6 +15,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Инициализация конфигурации
+load_dotenv()
+
 settings = Settings()
 
 
@@ -23,8 +26,8 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("🚀 Запуск приложения...")
     try:
-        load_model(settings.model1_path)
-        load_model(settings.model2_path)
+        load_model(str(settings.model1_path))
+        load_model(str(settings.model2_path))
         logger.info("✅ Модели загружены успешно")
     except Exception as e:
         logger.error(f"❌ Ошибка при загрузке моделей: {str(e)}")

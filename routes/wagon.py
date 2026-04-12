@@ -24,12 +24,14 @@ async def upload_zip_file(
     logger.info(f"🚀 POST /upload/zip: {file.filename}")
 
     batch_id = f"batch_{uuid.uuid4().hex[:12]}"
-    job_id = f"job_{uuid.uuid4().hex[:12]}"
+    job_id: str = f"job_{uuid.uuid4().hex[:12]}"
+    if job_id is None:
+        raise HTTPException(500, "Failed to generate job ID")
     logger.info(f"📝 Batch ID: {batch_id}")
 
     try:
         # Проверка расширения
-        if not file.filename.lower().endswith(".zip"):
+        if file.filename is None or not file.filename.lower().endswith(".zip"):
             error = "Файл должен быть ZIP архивом (.zip)"
             logger.error(f"❌ {error}")
             raise HTTPException(status_code=400, detail=error)
@@ -39,9 +41,10 @@ async def upload_zip_file(
 
         # Распаковать и сохранить
         success, job_dir, error, extracted_files = await UploadHandler.extract_and_save_zip(
-            file=file, job_id=job_id
+            file=file, job_id=str(job_id)
         )
-
+        if job_dir is None:
+            raise HTTPException(500, "Job directory is None")
         if not success:
             logger.error(f"❌ Ошибка обработки ZIP: {error}")
             JobManager.fail_job(job_id, error)
@@ -123,13 +126,13 @@ async def upload_single_file(
         JobManager.create_job(job_id, total_files=1)
 
         # Сохранить файл
-        success, job_dir, error = await UploadHandler.save_single_file(
+        success, job_dir, error = await UploadHandler.save_single_file(  # type: ignore
             file=file, job_id=job_id, camera_id=camera_id
         )
 
         if not success:
             logger.error(f"❌ Ошибка сохранения: {error}")
-            JobManager.fail_job(job_id, error)
+            JobManager.fail_job(job_id, error or "Unknown error")  # ← исправлено
             raise HTTPException(status_code=400, detail=error)
 
         logger.info(f"✅ Файл сохранен: {job_dir}")
@@ -171,6 +174,8 @@ async def upload_multiple_files(
     logger.info(f"🚀 POST /upload/multiple: {len(files)} файлов")
 
     job_id = f"job_{uuid.uuid4().hex[:12]}"
+    if job_id is None:
+        raise HTTPException(500, "Failed to generate job ID")
     logger.info(f"📝 Job ID: {job_id}")
 
     try:
@@ -184,10 +189,13 @@ async def upload_multiple_files(
         JobManager.create_job(job_id, total_files=len(files))
 
         # Сохранить файлы
-        success, job_dir, error, saved_count = await UploadHandler.save_multiple_files(
-            files=files, job_id=job_id, camera_id=camera_id
+        success, job_dir, error, saved_count = (
+            await UploadHandler.save_multiple_files(  # type: ignore
+                files=files, job_id=job_id, camera_id=camera_id
+            )
         )
-
+        if job_dir is None:
+            raise HTTPException(500, "Job directory is None")
         if not success:
             logger.error(f"❌ Ошибка сохранения: {error}")
             JobManager.fail_job(job_id, error)

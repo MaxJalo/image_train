@@ -211,7 +211,7 @@ class UploadHandler:
     @staticmethod
     async def save_single_file(
         file: UploadFile, job_id: str, camera_id: Optional[int] = None
-    ) -> Tuple[bool, Path, Optional[str]]:
+    ) -> Tuple[bool, Optional[Path], Optional[str]]:
         """Сохранить один загруженный файл"""
         logger.info(f"💾 Сохранение одного файла для задания {job_id}")
 
@@ -246,8 +246,8 @@ class UploadHandler:
 
     @staticmethod
     async def save_multiple_files(
-        files: List[UploadFile], job_id: str, camera_id: Optional[int] = None
-    ) -> Tuple[bool, Path, Optional[str], int]:
+        files: List[UploadFile], job_id: Optional[str], camera_id: Optional[int] = None
+    ) -> Tuple[bool, Optional[Path], Optional[str], int]:
         """Сохранить несколько загруженных файлов"""
         logger.info(f"💾 Сохранение {len(files)} файлов для задания {job_id}")
 
@@ -301,8 +301,8 @@ class UploadHandler:
 
     @staticmethod
     async def extract_and_save_zip(
-        file: UploadFile, job_id: str, camera_id: Optional[int] = None
-    ) -> Tuple[bool, Path, Optional[str], List[ExtractedImageFile]]:
+        file: UploadFile, job_id: Optional[str], camera_id: Optional[int] = None
+    ) -> Tuple[bool, Optional[Path], str, List[ExtractedImageFile]]:
         """
         Распаковать и сохранить ZIP архив со сложной структурой.
 

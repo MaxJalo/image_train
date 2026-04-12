@@ -44,13 +44,19 @@ jobs:
 
       - name: Install linting tools
         run: |
-          uv pip install --system black flake8 ruff
+          uv pip install --system black flake8
+
+      - name: Run isort
+        run: isort --check-only --profile black core/ db/ models/ routes/ services/ app.py
 
       - name: Run black
-        run: black --check core/ db/ models/ routes/ services/ app.py || true
+        run: black --check core/ db/ models/ routes/ services/ app.py
 
-      - name: Run ruff
-        run: ruff check core/ db/ models/ routes/ services/ app.py || true
+      - name: Run mypy
+        run: mypy core/ db/ models/ routes/ services/ app.py --ignore-missing-imports --allow-untyped-decorators --explicit-package-bases
 
       - name: Run flake8
-        run: flake8 core/ db/ models/ routes/ services/ app.py --max-line-length=100 || true
+        run: flake8 core/ db/ models/ routes/ services/ app.py --max-line-length=100
+
+      - name: Run pylint
+        run: pylint core/ db/ models/ routes/ services/ app.py --exit-zero

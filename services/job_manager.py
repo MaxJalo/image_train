@@ -134,10 +134,8 @@ class JobManager:
             if job_data["total_files"] > 0:
                 job_data["progress"] = int((processed_files / job_data["total_files"]) * 90) + 5
 
-        logger.debug(
-            f"📊 Прогресс {job_id}:\
-             {job_data['progress']}% ({processed_files}/{job_data['total_files']})"
-        )
+        logger.debug(f"📊 Прогресс {job_id}:\
+             {job_data['progress']}% ({processed_files}/{job_data['total_files']})")
         return True
 
     @staticmethod

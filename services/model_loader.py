@@ -90,10 +90,8 @@ def _load_mobilenet_model(model_path: str) -> Any:
 
         logger.debug("Загрузка весов state_dict в модель")
         result = model.load_state_dict(state_dict, strict=False)
-        logger.debug(
-            f"State dict загружен: {len(result.missing_keys)}\
-             недостающих ключей, {len(result.unexpected_keys)} неожиданных ключей"
-        )
+        logger.debug(f"State dict загружен: {len(result.missing_keys)}\
+             недостающих ключей, {len(result.unexpected_keys)} неожиданных ключей")
 
         model.eval()
         logger.info(f"✅ MobileNet V3 Small успешно загружена на device: {device}")
@@ -128,10 +126,8 @@ def _load_pytorch_model(model_path: str) -> Any:
             logger.info(f"✅ YOLO модель успешно загружена на device: {device}")
             return model
         except Exception as yolo_error:
-            logger.debug(
-                f"Загрузчик YOLO не удался\
-                 ({type(yolo_error).__name__}), попытка generic torch.load"
-            )
+            logger.debug(f"Загрузчик YOLO не удался\
+                 ({type(yolo_error).__name__}), попытка generic torch.load")
             loaded = torch.load(model_path, map_location=device, weights_only=False)
 
             if isinstance(loaded, dict):
@@ -139,10 +135,8 @@ def _load_pytorch_model(model_path: str) -> Any:
                 try:
                     return _load_mobilenet_model(model_path)
                 except Exception as mobilenet_error:
-                    logger.error(
-                        f"Ошибка загрузки MobileNet:\
-                         {type(mobilenet_error).__name__}: {mobilenet_error}"
-                    )
+                    logger.error(f"Ошибка загрузки MobileNet:\
+                         {type(mobilenet_error).__name__}: {mobilenet_error}")
                     raise Exception(
                         f"Не удалось загрузить как state_dict MobileNet: {str(mobilenet_error)}"
                     )

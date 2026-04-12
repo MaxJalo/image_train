@@ -145,10 +145,8 @@ async def test_model1(photo_path: str):
         t1 = time.time()
         inference_time = round(t1 - t0, 4)
 
-        logger.info(
-            f"Inference complete: output type={type(output)},\
-             shape={output.shape if hasattr(output, 'shape') else 'N/A'}"
-        )
+        logger.info(f"Inference complete: output type={type(output)},\
+             shape={output.shape if hasattr(output, 'shape') else 'N/A'}")
 
         # Parse output
         result = {

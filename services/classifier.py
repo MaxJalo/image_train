@@ -172,18 +172,14 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
 
                 # Фильтрация по уверенности
                 if confidence < CONFIDENCE_THRESHOLD:
-                    logger.warning(
-                        f"⚠️ ОТБРАКОВКА:\
+                    logger.warning(f"⚠️ ОТБРАКОВКА:\
                      {img_path.name} (confidence={confidence:.4f}\
-                     < {CONFIDENCE_THRESHOLD})"
-                    )
+                     < {CONFIDENCE_THRESHOLD})")
                     rejected_count += 1
                     continue
                 # Логирование предсказания и текущего wagon_id
-                logger.debug(
-                    f"📸 {img_path.name} → {class_name}\
-                     (confidence={confidence:.3f}), current_wagon={current_wagon_id}"
-                )
+                logger.debug(f"📸 {img_path.name} → {class_name}\
+                     (confidence={confidence:.3f}), current_wagon={current_wagon_id}")
 
                 if class_name:
                     # Если нет текущего вагона, начинаем новый
@@ -211,10 +207,8 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
                         # Проверка длины перед сохранением
                         count_photos = len(current_wagon_photos)
                         if count_photos < 3:
-                            logger.warning(
-                                f"⚠️ Вагон #{current_wagon_id}\
-                                 слишком короткий ({count_photos}<3), отбрасывается"
-                            )
+                            logger.warning(f"⚠️ Вагон #{current_wagon_id}\
+                                 слишком короткий ({count_photos}<3), отбрасывается")
                             # Отбраковываем
                         else:
                             wagon_groups[current_wagon_id] = list(current_wagon_photos)
@@ -238,10 +232,8 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
         if current_wagon_id is not None and len(current_wagon_photos) > 0:
             count_photos = len(current_wagon_photos)
             if count_photos < 3:
-                logger.warning(
-                    f"⚠️ Вагон #{current_wagon_id}\
-                     слишком короткий ({count_photos}<3), отбрасывается"
-                )
+                logger.warning(f"⚠️ Вагон #{current_wagon_id}\
+                     слишком короткий ({count_photos}<3), отбрасывается")
             else:
                 wagon_groups[current_wagon_id] = list(current_wagon_photos)
                 logger.info(f"✅ Вагон #{current_wagon_id} завершен, фото: {count_photos}")

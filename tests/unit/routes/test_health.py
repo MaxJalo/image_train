@@ -2,7 +2,6 @@
 from unittest.mock import patch
 
 
-
 class TestHealthEndpoints:
     def test_health_check_basic(self):
         assert True

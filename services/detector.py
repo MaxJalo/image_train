@@ -117,10 +117,8 @@ def predict_model2(image: Image.Image) -> Model2Output:
         # Общая уверенность
         overall_confidence = total_confidence / detection_count if detection_count > 0 else 0.0
 
-        logger.info(
-            f"✅ Model-2 result: side={side},\
-             confidence={overall_confidence:.4f}, features={features}"
-        )
+        logger.info(f"✅ Model-2 result: side={side},\
+             confidence={overall_confidence:.4f}, features={features}")
 
         return Model2Output(
             brake_rod=features["brake_rod"],

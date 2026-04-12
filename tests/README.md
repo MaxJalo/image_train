@@ -191,7 +191,7 @@ pytest --tb=long
 
 ## Метрики покрытия / Coverage Metrics
 
-Целевое покрытие кода: **80%+**
+Целевое покрытие кода: **80%**
 
 ```bash
 # Генерировать HTML отчёт о покрытии
@@ -200,7 +200,8 @@ pytest --cov=. --cov-report=html
 # Открыть отчёт
 # htmlcov/index.html
 ```
+![photo_2026-03-29_17-54-46](https://github.com/user-attachments/assets/9f3c9f6d-378e-4c83-9c5b-569e940a53be)
 
 ---
 
-**Последнее обновление** / Last updated: 2026-03-20
+**Последнее обновление** / Last updated: 2026-04-02

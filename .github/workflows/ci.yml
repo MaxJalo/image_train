@@ -44,7 +44,7 @@ jobs:
 
       - name: Install linting tools
         run: |
-          uv pip install --system black flake8
+          uv pip install black flake8 isort mypy pylint
 
       - name: Run isort
         run: isort --check-only --profile black core/ db/ models/ routes/ services/ app.py

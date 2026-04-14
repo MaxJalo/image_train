@@ -58,7 +58,9 @@ async def process_and_save_batch(
         return batch_id
 
     except Exception as e:
-        logger.error(f"❌ Ошибка сохранения BatchDocument: {type(e).__name__}: {str(e)}")
+        logger.error(
+            f"❌ Ошибка сохранения BatchDocument: {type(e).__name__}: {str(e)}"
+        )
         return None
 
 

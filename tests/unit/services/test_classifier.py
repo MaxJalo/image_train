@@ -64,7 +64,9 @@ class TestClassifierFunctions:
         assert is_wagon is True
 
     @patch("services.classifier._get_model1")
-    def test_predict_model1_handles_non_tensor_output(self, mock_get_model1, sample_image):
+    def test_predict_model1_handles_non_tensor_output(
+        self, mock_get_model1, sample_image
+    ):
         class FakeModel:
             def parameters(self):
                 return iter([MagicMock(device="cpu")])

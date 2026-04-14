@@ -12,7 +12,10 @@ logger = logging.getLogger(__name__)
 
 
 async def process_job(
-    job_id: str, folder_path: str, camera_id: Optional[int] = None, wagon_id: Optional[str] = None
+    job_id: str,
+    folder_path: str,
+    camera_id: Optional[int] = None,
+    wagon_id: Optional[str] = None,
 ) -> None:
 
     logger.info(f"🚀 Начало обработки задания {job_id}")

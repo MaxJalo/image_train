@@ -55,7 +55,12 @@ class TestDetectorModule:
 
         def fake_predict(image):
             return Model2Output(
-                brake_rod=0.5, rod_nose=0.4, crane=0.0, tank=0.0, side="right", confidence=0.9
+                brake_rod=0.5,
+                rod_nose=0.4,
+                crane=0.0,
+                tank=0.0,
+                side="right",
+                confidence=0.9,
             )
 
         monkeypatch.setattr(detector, "predict_model2", fake_predict)

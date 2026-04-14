@@ -6,7 +6,9 @@ from services import aggregator
 class TestAggregatorService:
     @patch("services.aggregator.ensure_db_connection", new_callable=AsyncMock)
     @patch("services.aggregator.BatchDocument", autospec=True)
-    def test_process_and_save_batch_inserts_document(self, mock_batch_cls, mock_db_check):
+    def test_process_and_save_batch_inserts_document(
+        self, mock_batch_cls, mock_db_check
+    ):
         mock_db_check.return_value = True
         mock_instance = MagicMock()
         mock_instance.insert = AsyncMock(return_value=None)
@@ -39,7 +41,9 @@ class TestAggregatorService:
         mock_batch_cls.batch_id = "batch_id"
         mock_batch_cls.find_one = AsyncMock(return_value=None)
 
-        response = __import__("asyncio").run(aggregator.get_batch_status("missing_batch"))
+        response = __import__("asyncio").run(
+            aggregator.get_batch_status("missing_batch")
+        )
 
         assert response["status"] == "not_found"
         assert response["batch_id"] == "missing_batch"
@@ -66,7 +70,9 @@ class TestAggregatorService:
         assert response["results"]["wagon_1"]["final_side"] == "left"
 
     @patch("services.aggregator.ensure_db_connection", new_callable=AsyncMock)
-    def test_process_and_save_batch_returns_none_when_db_unavailable(self, mock_db_check):
+    def test_process_and_save_batch_returns_none_when_db_unavailable(
+        self, mock_db_check
+    ):
         mock_db_check.return_value = False
 
         response = __import__("asyncio").run(

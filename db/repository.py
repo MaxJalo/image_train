@@ -7,7 +7,12 @@ from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from core.config import settings
-from models.schemas import BatchDocument, FinalVerdictModel, PhotoDocument, WagonAggregateDocument
+from models.schemas import (
+    BatchDocument,
+    FinalVerdictModel,
+    PhotoDocument,
+    WagonAggregateDocument,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +32,8 @@ async def ensure_db_connection() -> bool:
         # Инициализируем Beanie если еще не сделано
         try:
             await init_beanie(
-                database=db, document_models=[PhotoDocument, WagonAggregateDocument, BatchDocument]
+                database=db,
+                document_models=[PhotoDocument, WagonAggregateDocument, BatchDocument],
             )
             logger.info("✅ MongoDB инициализирована с Beanie")
         except RuntimeError as e:
@@ -40,12 +46,16 @@ async def ensure_db_connection() -> bool:
         return True
 
     except Exception as e:
-        logger.error(f"❌ Ошибка при проверке подключения БД: {type(e).__name__}: {str(e)}")
+        logger.error(
+            f"❌ Ошибка при проверке подключения БД: {type(e).__name__}: {str(e)}"
+        )
         return False
 
 
 async def get_wagon_status(wagon_id: str) -> Dict[str, Any]:
-    wagon_agg = await WagonAggregateDocument.find_one(WagonAggregateDocument.wagon_id == wagon_id)
+    wagon_agg = await WagonAggregateDocument.find_one(
+        WagonAggregateDocument.wagon_id == wagon_id
+    )
 
     if not wagon_agg:
         return {
@@ -66,7 +76,9 @@ async def get_wagon_status(wagon_id: str) -> Dict[str, Any]:
 
 
 async def get_wagon_result(wagon_id: str) -> Dict[str, Any]:
-    wagon_agg = await WagonAggregateDocument.find_one(WagonAggregateDocument.wagon_id == wagon_id)
+    wagon_agg = await WagonAggregateDocument.find_one(
+        WagonAggregateDocument.wagon_id == wagon_id
+    )
 
     if not wagon_agg:
         return {

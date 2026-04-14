@@ -71,7 +71,12 @@ class UploadHandler:
                 # Проверяем что это похоже на hash (буквы и цифры, не основная структура)
                 if not part.isdigit() and len(part) > 0:
                     # Исключаем типичные системные папки
-                    if part.lower() not in ["extracted", "__pycache__", ".git", ".vscode"]:
+                    if part.lower() not in [
+                        "extracted",
+                        "__pycache__",
+                        ".git",
+                        ".vscode",
+                    ]:
                         train_hash = part
                         break
 
@@ -112,7 +117,9 @@ class UploadHandler:
     def _log_extracted_files_summary(extracted_files: List[ExtractedImageFile]):
         """Логировать подробную информацию о извлеченных файлах"""
         logger.info("=" * 80)
-        logger.info(f"📸 ИНФОРМАЦИЯ О ИЗВЛЕЧЕННЫХ ФАЙЛАХ ({len(extracted_files)} всего)")
+        logger.info(
+            f"📸 ИНФОРМАЦИЯ О ИЗВЛЕЧЕННЫХ ФАЙЛАХ ({len(extracted_files)} всего)"
+        )
         logger.info("=" * 80)
 
         for idx, file_info in enumerate(extracted_files, 1):
@@ -253,7 +260,9 @@ class UploadHandler:
 
         # Проверка количества файлов
         if len(files) > MAX_FILES:
-            error = f"Превышено максимальное количество файлов: {len(files)} > {MAX_FILES}"
+            error = (
+                f"Превышено максимальное количество файлов: {len(files)} > {MAX_FILES}"
+            )
             logger.error(f"❌ {error}")
             return False, None, error, 0
 
@@ -297,7 +306,12 @@ class UploadHandler:
             return False, None, error, 0
 
         logger.info(f"✅ Сохранено {saved_count} файлов из {len(files)}")
-        return True, job_dir, last_error if saved_count < len(files) else None, saved_count
+        return (
+            True,
+            job_dir,
+            last_error if saved_count < len(files) else None,
+            saved_count,
+        )
 
     @staticmethod
     async def extract_and_save_zip(

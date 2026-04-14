@@ -45,7 +45,9 @@ def temp_storage(tmp_path, monkeypatch):
     monkeypatch.setattr(
         "services.upload_handler.UploadHandler.TEMP_BASE_DIR", temp_dir, raising=False
     )
-    monkeypatch.setattr("services.upload_handler.TEMP_BASE_DIR", temp_dir, raising=False)
+    monkeypatch.setattr(
+        "services.upload_handler.TEMP_BASE_DIR", temp_dir, raising=False
+    )
     return temp_dir
 
 
@@ -64,7 +66,9 @@ def mock_mongodb(monkeypatch):
     mock_db.list_collection_names = AsyncMock(return_value=[])
     mock_db.__getitem__.return_value = mock_db
     monkeypatch.setattr(
-        "db.repository.AsyncIOMotorClient", MagicMock(return_value=mock_client), raising=False
+        "db.repository.AsyncIOMotorClient",
+        MagicMock(return_value=mock_client),
+        raising=False,
     )
     return mock_client
 
@@ -86,7 +90,9 @@ def test_client(monkeypatch):
     fake_model.eval = MagicMock()
     fake_model.return_value = MagicMock()
 
-    monkeypatch.setattr("app.load_model", MagicMock(return_value=fake_model), raising=False)
+    monkeypatch.setattr(
+        "app.load_model", MagicMock(return_value=fake_model), raising=False
+    )
     monkeypatch.setattr(
         model_loader, "load_model", MagicMock(return_value=fake_model), raising=False
     )

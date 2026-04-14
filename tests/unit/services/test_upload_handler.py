@@ -102,7 +102,9 @@ class TestUploadHandler:
         invalid_file = UploadFile(filename="bad.txt", file=BytesIO(b"dummy"))
 
         success, job_dir, error, saved_count = asyncio.run(
-            UploadHandler.save_multiple_files([valid_file, invalid_file], "job5", camera_id=1)
+            UploadHandler.save_multiple_files(
+                [valid_file, invalid_file], "job5", camera_id=1
+            )
         )
 
         assert success is True

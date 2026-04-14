@@ -61,7 +61,12 @@ def predict_model2(image: Image.Image) -> Model2Output:
         if model == "FALLBACK":
             logger.warning("📌 Использование заглушки Model-2 (модель не загружена)")
             return Model2Output(
-                brake_rod=0.5, rod_nose=0.5, crane=0.5, tank=0.5, side="left", confidence=0.5
+                brake_rod=0.5,
+                rod_nose=0.5,
+                crane=0.5,
+                tank=0.5,
+                side="left",
+                confidence=0.5,
             )
 
         logger.debug("   Конвертирование изображения в RGB...")
@@ -90,7 +95,9 @@ def predict_model2(image: Image.Image) -> Model2Output:
                     else:
                         class_name = f"class_{cls_id}"
 
-                    logger.debug(f"   Box {box_idx}: {class_name} (confidence: {confidence:.4f})")
+                    logger.debug(
+                        f"   Box {box_idx}: {class_name} (confidence: {confidence:.4f})"
+                    )
 
                     if class_name not in detected_classes:
                         detected_classes[class_name] = []
@@ -115,7 +122,9 @@ def predict_model2(image: Image.Image) -> Model2Output:
         logger.debug(f"   Определена сторона: {side}")
 
         # Общая уверенность
-        overall_confidence = total_confidence / detection_count if detection_count > 0 else 0.0
+        overall_confidence = (
+            total_confidence / detection_count if detection_count > 0 else 0.0
+        )
 
         logger.info(f"✅ Model-2 result: side={side},\
              confidence={overall_confidence:.4f}, features={features}")
@@ -134,7 +143,12 @@ def predict_model2(image: Image.Image) -> Model2Output:
         logger.debug(f"   Traceback: {repr(e)}")
         # Возвращаем минимальный валидный выход при ошибке
         return Model2Output(
-            brake_rod=0.0, rod_nose=0.0, crane=0.0, tank=0.0, side="left", confidence=0.0
+            brake_rod=0.0,
+            rod_nose=0.0,
+            crane=0.0,
+            tank=0.0,
+            side="left",
+            confidence=0.0,
         )
 
 
@@ -220,7 +234,9 @@ async def detect_wagon_sides(
                 )
 
             except Exception as e:
-                logger.error(f"❌ Ошибка обработки {photo_path.name}: {type(e).__name__}: {str(e)}")
+                logger.error(
+                    f"❌ Ошибка обработки {photo_path.name}: {type(e).__name__}: {str(e)}"
+                )
                 continue
 
         # Определить финальную сторону по большинству

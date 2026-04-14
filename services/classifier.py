@@ -53,14 +53,18 @@ def predict_model1(image: Image.Image) -> Tuple[bool, float]:
         if image.mode != "RGB":
             image = image.convert("RGB")
 
-        logger.debug(f"   Масштабирование к {IMAGE_SIZE}x{IMAGE_SIZE} и применение нормализации...")
+        logger.debug(
+            f"   Масштабирование к {IMAGE_SIZE}x{IMAGE_SIZE} и применение нормализации..."
+        )
 
         # Применение трансформации
         transform = transforms.Compose(
             [
                 transforms.Resize((IMAGE_SIZE, IMAGE_SIZE)),
                 transforms.ToTensor(),
-                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+                transforms.Normalize(
+                    mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
+                ),
             ]
         )
 
@@ -102,7 +106,9 @@ def predict_model1(image: Image.Image) -> Tuple[bool, float]:
         return False, 0.0
 
 
-async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Path, int]]]:
+async def classify_and_group_wagons(
+    folder_path: str,
+) -> Dict[str, List[Tuple[Path, int]]]:
 
     logger.info("🚂 Начало классификации и группирования по вагонам")
     logger.info(f"📂 Путь к папке: {folder_path}")
@@ -148,7 +154,9 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
                 image = Image.open(BytesIO(image_bytes))
 
                 # Предсказание Model-1
-                logger.debug(f"🔍 Классификация {idx+1}/{len(image_files)}: {img_path.name}")
+                logger.debug(
+                    f"🔍 Классификация {idx+1}/{len(image_files)}: {img_path.name}"
+                )
                 pred_class, pred_conf = predict_model1(image)
 
                 # Добавляем текущее предсказание в буфер и делаем сглаживание простым большинством
@@ -163,7 +171,9 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
                 # For logging confidence, take average confidence of items matching smoothed label
                 confidences = [c for (p, c) in buffer if p == smoothed_label]
                 smoothed_conf = (
-                    float(sum(confidences) / len(confidences)) if confidences else pred_conf
+                    float(sum(confidences) / len(confidences))
+                    if confidences
+                    else pred_conf
                 )
 
                 class_name, confidence = smoothed_label, smoothed_conf
@@ -195,7 +205,10 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
                     )
                     wagon_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                     output_wagon_dir = (
-                        Path.cwd() / settings.output_model1_path / f"{wagon_timestamp}" / f"{current_wagon_id}"
+                        Path.cwd()
+                        / settings.output_model1_path
+                        / f"{wagon_timestamp}"
+                        / f"{current_wagon_id}"
                     )
                     output_wagon_dir.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(img_path, output_wagon_dir)
@@ -224,7 +237,9 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
                     logger.info(f"🔄 Граница обнаружена — начинаем {current_wagon_id}")
 
             except Exception as e:
-                logger.error(f"❌ Ошибка обработки {img_path.name}: {type(e).__name__}: {str(e)}")
+                logger.error(
+                    f"❌ Ошибка обработки {img_path.name}: {type(e).__name__}: {str(e)}"
+                )
                 rejected_count += 1
                 continue
 
@@ -236,7 +251,9 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
                      слишком короткий ({count_photos}<3), отбрасывается")
             else:
                 wagon_groups[current_wagon_id] = list(current_wagon_photos)
-                logger.info(f"✅ Вагон #{current_wagon_id} завершен, фото: {count_photos}")
+                logger.info(
+                    f"✅ Вагон #{current_wagon_id} завершен, фото: {count_photos}"
+                )
 
         logger.info("✅ Группирование завершено:")
         logger.info(f"   Обработано: {processed_count}")
@@ -248,5 +265,7 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
         return wagon_groups
 
     except Exception as e:
-        logger.error(f"❌ Ошибка в classify_and_group_wagons: {type(e).__name__}: {str(e)}")
+        logger.error(
+            f"❌ Ошибка в classify_and_group_wagons: {type(e).__name__}: {str(e)}"
+        )
         raise

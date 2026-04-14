@@ -25,7 +25,9 @@ def make_zip_bytes(file_map):
 
 
 class TestWagonRoutes:
-    def test_upload_zip_endpoint_with_valid_zip(self, test_client, monkeypatch, temp_storage):
+    def test_upload_zip_endpoint_with_valid_zip(
+        self, test_client, monkeypatch, temp_storage
+    ):
         zip_bytes = make_zip_bytes({"images/photo1.jpg": make_image_bytes()})
         mock_batch = {
             "batch_id": "batch_123",
@@ -33,7 +35,8 @@ class TestWagonRoutes:
             "data": {"batch_id": "batch_123"},
         }
         monkeypatch.setattr(
-            "routes.wagon.aggregator.get_batch_results", AsyncMock(return_value=mock_batch)
+            "routes.wagon.aggregator.get_batch_results",
+            AsyncMock(return_value=mock_batch),
         )
         monkeypatch.setattr("routes.wagon.process_job", lambda *args, **kwargs: None)
 
@@ -48,7 +51,8 @@ class TestWagonRoutes:
 
     def test_upload_zip_endpoint_rejects_invalid_file(self, test_client):
         response = test_client.post(
-            "/api/ml/upload/zip", files={"file": ("bad.txt", b"hello world", "text/plain")}
+            "/api/ml/upload/zip",
+            files={"file": ("bad.txt", b"hello world", "text/plain")},
         )
 
         assert response.status_code == 400
@@ -146,7 +150,13 @@ class TestWagonRoutes:
     def test_get_batch_results_returns_data(self, test_client, monkeypatch):
         monkeypatch.setattr(
             "routes.wagon.aggregator.get_batch_results",
-            AsyncMock(return_value={"batch_id": "batch_1", "status": "completed", "results": {}}),
+            AsyncMock(
+                return_value={
+                    "batch_id": "batch_1",
+                    "status": "completed",
+                    "results": {},
+                }
+            ),
         )
 
         response = test_client.get("/api/ml/batch-results/batch_1")

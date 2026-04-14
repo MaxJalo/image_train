@@ -51,7 +51,9 @@ class TestDebugRoutes:
         fake_model.return_value = "output"
 
         monkeypatch.setattr("routes.debug.model_loader.get_cached_models", lambda: {})
-        monkeypatch.setattr("routes.debug.model_loader.load_model", lambda path: fake_model)
+        monkeypatch.setattr(
+            "routes.debug.model_loader.load_model", lambda path: fake_model
+        )
 
         result = asyncio.run(run_test_photo(str(photo)))
 

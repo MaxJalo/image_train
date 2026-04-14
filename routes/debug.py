@@ -59,7 +59,10 @@ async def run_test_photo(photo_path: str):
     results = {}
     # Try to load models from cache
     cached = model_loader.get_cached_models()
-    for key, model_path in [("model1", settings.model1_path), ("model2", settings.model2_path)]:
+    for key, model_path in [
+        ("model1", settings.model1_path),
+        ("model2", settings.model2_path),
+    ]:
         info = {"loaded": False, "error": None, "inference_time": None}
         try:
             if model_path in cached:
@@ -129,7 +132,9 @@ async def test_model1(photo_path: str):
             [
                 transforms.Resize((300, 300)),
                 transforms.ToTensor(),
-                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+                transforms.Normalize(
+                    mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]
+                ),
             ]
         )
 

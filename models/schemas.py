@@ -21,10 +21,16 @@ class Model2Output(BaseModel):
     brake_rod: float = Field(
         ..., ge=0.0, le=1.0, description="Уверенность обнаружения тормозной штанги"
     )
-    rod_nose: float = Field(..., ge=0.0, le=1.0, description="Уверенность обнаружения носика штока")
-    crane: float = Field(..., ge=0.0, le=1.0, description="Уверенность обнаружения крана")
+    rod_nose: float = Field(
+        ..., ge=0.0, le=1.0, description="Уверенность обнаружения носика штока"
+    )
+    crane: float = Field(
+        ..., ge=0.0, le=1.0, description="Уверенность обнаружения крана"
+    )
     tank: float = Field(..., ge=0.0, le=1.0, description="Уверенность обнаружения бака")
-    side: Literal["left", "right"] = Field(..., description="Сторона вагона (левая или правая)")
+    side: Literal["left", "right"] = Field(
+        ..., description="Сторона вагона (левая или правая)"
+    )
     confidence: float = Field(..., ge=0.0, le=1.0, description="Общая оценка доверия")
 
 
@@ -148,7 +154,9 @@ class PhotoDocument(Document):
     batch_id: Optional[str] = None  # Ссылка на батч
 
     # Результаты Model-1 (фильтрация)
-    model1_result: Optional[bool] = None  # True если прошла фильтр, False если отбракована
+    model1_result: Optional[bool] = (
+        None  # True если прошла фильтр, False если отбракована
+    )
     model1_confidence: Optional[float] = None  # Уверенность Model-1
 
     # Поля финального вердикта (заполняются после агрегации)

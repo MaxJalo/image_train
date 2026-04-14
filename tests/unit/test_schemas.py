@@ -31,6 +31,8 @@ def test_model2_output_rejects_invalid_confidence():
 
 
 def test_final_verdict_model_requires_fields():
-    verdict = FinalVerdictModel(side="right", left_count=2, right_count=1, total_photos=3)
+    verdict = FinalVerdictModel(
+        side="right", left_count=2, right_count=1, total_photos=3
+    )
     assert verdict.side == "right"
     assert verdict.total_photos == 3

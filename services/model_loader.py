@@ -47,7 +47,9 @@ def load_model(model_path: str) -> Any:
         return model
 
     except Exception as e:
-        logger.error(f"❌ Ошибка загрузки модели {path.name}: {type(e).__name__}: {str(e)}")
+        logger.error(
+            f"❌ Ошибка загрузки модели {path.name}: {type(e).__name__}: {str(e)}"
+        )
         raise
 
 
@@ -74,16 +76,23 @@ def _load_mobilenet_model(model_path: str) -> Any:
             if classifier_outputs:
                 classifier_outputs.sort()
                 num_classes = classifier_outputs[0][0]
-                logger.debug(f"Обнаружено num_classes={num_classes} из {classifier_outputs[0][1]}")
+                logger.debug(
+                    f"Обнаружено num_classes={num_classes} из {classifier_outputs[0][1]}"
+                )
 
         if isinstance(state_dict, dict):
             if any(key.startswith("module.") for key in state_dict.keys()):
-                logger.debug("Обнаружен префикс 'module.' в ключах state_dict, удаляю...")
+                logger.debug(
+                    "Обнаружен префикс 'module.' в ключах state_dict, удаляю..."
+                )
                 state_dict = {
-                    key.replace("module.", "", 1): value for key, value in state_dict.items()
+                    key.replace("module.", "", 1): value
+                    for key, value in state_dict.items()
                 }
 
-        logger.info(f"Создание MobileNet V3 Small на device: {device} (num_classes={num_classes})")
+        logger.info(
+            f"Создание MobileNet V3 Small на device: {device} (num_classes={num_classes})"
+        )
         model = models.mobilenet_v3_small(weights=None)
         model.classifier[3] = nn.Linear(model.classifier[3].in_features, num_classes)
         model = model.to(device)
@@ -104,7 +113,9 @@ def _load_mobilenet_model(model_path: str) -> Any:
             "PyTorch и torchvision требуются. Установить с: pip install torch torchvision"
         )
     except Exception as e:
-        logger.error(f"Ошибка загрузки MobileNet V3 Small: {type(e).__name__}: {str(e)}")
+        logger.error(
+            f"Ошибка загрузки MobileNet V3 Small: {type(e).__name__}: {str(e)}"
+        )
         raise Exception(f"Не удалось загрузить модель MobileNet V3 Small: {str(e)}")
 
 
@@ -131,7 +142,9 @@ def _load_pytorch_model(model_path: str) -> Any:
             loaded = torch.load(model_path, map_location=device, weights_only=False)
 
             if isinstance(loaded, dict):
-                logger.info("PyTorch файл похож на state_dict, попытка загрузки MobileNet...")
+                logger.info(
+                    "PyTorch файл похож на state_dict, попытка загрузки MobileNet..."
+                )
                 try:
                     return _load_mobilenet_model(model_path)
                 except Exception as mobilenet_error:
@@ -144,13 +157,19 @@ def _load_pytorch_model(model_path: str) -> Any:
             try:
                 loaded.eval()
             except Exception:
-                logger.debug("Загруженный объект не имеет eval(), пропускаю вызов eval()")
-            logger.info(f"✅ Общая PyTorch модель успешно загружена на device: {device}")
+                logger.debug(
+                    "Загруженный объект не имеет eval(), пропускаю вызов eval()"
+                )
+            logger.info(
+                f"✅ Общая PyTorch модель успешно загружена на device: {device}"
+            )
             return loaded
 
     except ImportError as e:
         logger.error(f"PyTorch или YOLO не установлены: {str(e)}")
-        raise ImportError("PyTorch не установлен. Установить с: pip install torch ultralytics")
+        raise ImportError(
+            "PyTorch не установлен. Установить с: pip install torch ultralytics"
+        )
     except Exception as e:
         logger.error(f"Ошибка загрузки PyTorch модели: {type(e).__name__}: {str(e)}")
         raise Exception(f"Не удалось загрузить PyTorch модель: {str(e)}")

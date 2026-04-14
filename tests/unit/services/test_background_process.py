@@ -44,7 +44,9 @@ class TestBackgroundProcess:
         monkeypatch.setattr(
             aggregator, "process_and_save_batch", AsyncMock(return_value="batch_123")
         )
-        monkeypatch.setattr(upload_handler.UploadHandler, "cleanup_job_files", lambda _job_id: True)
+        monkeypatch.setattr(
+            upload_handler.UploadHandler, "cleanup_job_files", lambda _job_id: True
+        )
 
         asyncio.run(process_job(job_id, str(temp_dir)))
 

@@ -118,7 +118,9 @@ class JobManager:
         return True
 
     @staticmethod
-    def update_progress(job_id: str, processed_files: int, progress: Optional[int] = None) -> bool:
+    def update_progress(
+        job_id: str, processed_files: int, progress: Optional[int] = None
+    ) -> bool:
         """Обновить прогресс обработки"""
         if job_id not in _jobs_store:
             logger.error(f"❌ Задание не найдено: {job_id}")
@@ -132,7 +134,9 @@ class JobManager:
         else:
             # Автоматический расчет прогресса
             if job_data["total_files"] > 0:
-                job_data["progress"] = int((processed_files / job_data["total_files"]) * 90) + 5
+                job_data["progress"] = (
+                    int((processed_files / job_data["total_files"]) * 90) + 5
+                )
 
         logger.debug(f"📊 Прогресс {job_id}:\
              {job_data['progress']}% ({processed_files}/{job_data['total_files']})")
@@ -206,7 +210,9 @@ def start_job(job_id: str) -> bool:
     return JobManager.start_job(job_id)
 
 
-def update_progress(job_id: str, processed_files: int, progress: Optional[int] = None) -> bool:
+def update_progress(
+    job_id: str, processed_files: int, progress: Optional[int] = None
+) -> bool:
     """Обновить прогресс"""
     return JobManager.update_progress(job_id, processed_files, progress)
 

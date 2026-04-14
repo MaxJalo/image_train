@@ -40,8 +40,8 @@ async def upload_zip_file(
         JobManager.create_job(job_id, total_files=1)
 
         # Распаковать и сохранить
-        success, job_dir, error, extracted_files = await UploadHandler.extract_and_save_zip(
-            file=file, job_id=str(job_id)
+        success, job_dir, error, extracted_files = (
+            await UploadHandler.extract_and_save_zip(file=file, job_id=str(job_id))
         )
         if job_dir is None:
             raise HTTPException(500, "Job directory is None")
@@ -58,7 +58,10 @@ async def upload_zip_file(
 
         # Запустить фоновую обработку
         background_tasks.add_task(
-            process_job, job_id=job_id, folder_path=str(job_dir / "extracted"), wagon_id=None
+            process_job,
+            job_id=job_id,
+            folder_path=str(job_dir / "extracted"),
+            wagon_id=None,
         )
 
         logger.info(f"✅ Задание {job_id} отправлено на обработку")
@@ -70,7 +73,9 @@ async def upload_zip_file(
     except Exception as e:
         logger.error(f"❌ Ошибка обработки ZIP: {type(e).__name__}: {str(e)}")
         JobManager.fail_job(job_id, str(e))
-        raise HTTPException(status_code=500, detail=f"Ошибка при обработке ZIP: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Ошибка при обработке ZIP: {str(e)}"
+        )
 
 
 # ==================== BATCH INFORMATION ====================
@@ -85,7 +90,10 @@ async def get_batch_status(batch_id: str):
 
     try:
         status = await aggregator.get_batch_status(batch_id)
-        return {"status": "success" if status.get("status") != "error" else "error", "data": status}
+        return {
+            "status": "success" if status.get("status") != "error" else "error",
+            "data": status,
+        }
     except Exception as e:
         logger.error(f"❌ Ошибка получения статуса: {type(e).__name__}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -100,7 +108,10 @@ async def get_batch_results(batch_id: str):
 
     try:
         result = await aggregator.get_batch_results(batch_id)
-        return {"status": "success" if result.get("status") != "error" else "error", "data": result}
+        return {
+            "status": "success" if result.get("status") != "error" else "error",
+            "data": result,
+        }
     except Exception as e:
         logger.error(f"❌ Ошибка получения результатов: {type(e).__name__}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -205,7 +216,11 @@ async def upload_multiple_files(
 
         # Запустить фоновую обработку
         background_tasks.add_task(
-            process_job, job_id=job_id, folder_path=str(job_dir), camera_id=camera_id, wagon_id=None
+            process_job,
+            job_id=job_id,
+            folder_path=str(job_dir),
+            camera_id=camera_id,
+            wagon_id=None,
         )
 
         logger.info(f"✅ Задание {job_id} отправлено на обработку")
@@ -254,7 +269,9 @@ async def get_job_status(job_id: str):
         "error": job_info.error,
         "created_at": job_info.created_at.isoformat() if job_info.created_at else None,
         "started_at": job_info.started_at.isoformat() if job_info.started_at else None,
-        "completed_at": job_info.completed_at.isoformat() if job_info.completed_at else None,
+        "completed_at": (
+            job_info.completed_at.isoformat() if job_info.completed_at else None
+        ),
     }
 
 

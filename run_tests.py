@@ -20,20 +20,33 @@ def run_command(cmd):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Запуск тестов для проекта image_train")
-
-    parser.add_argument(
-        "--all", "-a", action="store_true", help="Запустить все тесты (unit + integration)"
-    )
-
-    parser.add_argument("--unit", "-u", action="store_true", help="Запустить только unit тесты")
-
-    parser.add_argument(
-        "--integration", "-i", action="store_true", help="Запустить только интеграционные тесты"
+    parser = argparse.ArgumentParser(
+        description="Запуск тестов для проекта image_train"
     )
 
     parser.add_argument(
-        "--coverage", "-c", action="store_true", help="Запустить тесты с отчётом кода покрытия"
+        "--all",
+        "-a",
+        action="store_true",
+        help="Запустить все тесты (unit + integration)",
+    )
+
+    parser.add_argument(
+        "--unit", "-u", action="store_true", help="Запустить только unit тесты"
+    )
+
+    parser.add_argument(
+        "--integration",
+        "-i",
+        action="store_true",
+        help="Запустить только интеграционные тесты",
+    )
+
+    parser.add_argument(
+        "--coverage",
+        "-c",
+        action="store_true",
+        help="Запустить тесты с отчётом кода покрытия",
     )
 
     parser.add_argument("--verbose", "-v", action="store_true", help="Подробный вывод")
@@ -42,15 +55,25 @@ def main():
         "--exitfirst", "-x", action="store_true", help="Остановиться на первой ошибке"
     )
 
-    parser.add_argument("--lf", action="store_true", help="Запустить последние неудачные тесты")
+    parser.add_argument(
+        "--lf", action="store_true", help="Запустить последние неудачные тесты"
+    )
 
-    parser.add_argument("--pdb", action="store_true", help="Запустить отладчик при ошибке")
+    parser.add_argument(
+        "--pdb", action="store_true", help="Запустить отладчик при ошибке"
+    )
 
-    parser.add_argument("--markers", "-m", type=str, help="Запустить тесты с определённым маркером")
+    parser.add_argument(
+        "--markers", "-m", type=str, help="Запустить тесты с определённым маркером"
+    )
 
-    parser.add_argument("--keyword", "-k", type=str, help="Запустить тесты на основе выражения")
+    parser.add_argument(
+        "--keyword", "-k", type=str, help="Запустить тесты на основе выражения"
+    )
 
-    parser.add_argument("--file", "-f", type=str, help="Запустить тесты из конкретного файла")
+    parser.add_argument(
+        "--file", "-f", type=str, help="Запустить тесты из конкретного файла"
+    )
 
     args = parser.parse_args()
 

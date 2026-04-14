@@ -40,7 +40,7 @@ class Settings(BaseSettings):
     model2_path: Path = Field(default="./NN_models/model-2.pt", validation_alias="MODEL2_PATH")
     model_timeout: int = Field(default=30, ge=5, le=300, validation_alias="MODEL_TIMEOUT")
 
-    output_model1_path: Path = Field(default="./result", validation_alias="OUTPUT_MODEL1_PATH")
+    output_model1_path: Path = Field(default="result", validation_alias="OUTPUT_MODEL1_PATH")
 
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = Field(
         default="INFO", validation_alias="LOG_LEVEL"

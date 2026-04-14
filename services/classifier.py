@@ -193,9 +193,9 @@ async def classify_and_group_wagons(folder_path: str) -> Dict[str, List[Tuple[Pa
                     logger.debug(
                         f"   ➕ Добавлено к {current_wagon_id} ({len(current_wagon_photos)})"
                     )
-
+                    wagon_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                     output_wagon_dir = (
-                        Path.cwd() / "photo_aggregate" / f"{timestamp}" / f"{current_wagon_id}"
+                        Path.cwd() / settings.output_model1_path / f"{wagon_timestamp}" / f"{current_wagon_id}"
                     )
                     output_wagon_dir.mkdir(parents=True, exist_ok=True)
                     shutil.copy2(img_path, output_wagon_dir)

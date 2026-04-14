@@ -1,0 +1,70 @@
+FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04 AS builder
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.10 \
+    python3.10-venv \
+    python3-pip \
+    curl \
+    gcc \
+    g++ \
+    && ln -s /usr/bin/python3.10 /usr/bin/python \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+ENV UV_PYTHON_PREFERENCE=only-system
+
+RUN uv venv /app/.venv --python-preference only-system
+ENV VIRTUAL_ENV=/app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+
+COPY pyproject-cuda.toml ./pyproject.toml
+COPY uv.lock .
+
+RUN uv sync --no-dev --frozen --no-install-project && \
+    rm -rf /root/.cache/uv
+
+FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.10 \
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    curl \
+    && ln -s /usr/bin/python3.10 /usr/bin/python \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /app/.venv /app/.venv
+ENV VIRTUAL_ENV=/app/.venv
+ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+COPY app.py .
+COPY core/ ./core/
+COPY db/ ./db/
+COPY routes/ ./routes/
+COPY services/ ./services/
+COPY models/ ./models/
+COPY NN_models/ ./NN_models/
+
+RUN mkdir -p /app/{results,logs,temp} && \
+    adduser --system --group --no-create-home appuser && \
+    chown -R appuser:appuser /app/{results,logs,temp}
+
+USER appuser
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8000/api/health || exit 1
+
+EXPOSE 8000
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "info"]

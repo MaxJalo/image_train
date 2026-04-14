@@ -43,12 +43,12 @@ process_batch_task = DockerOperator(
     image='wagon-batch-processor:latest',
     command='--batch-id {{ ds_nodash }}',
     auto_remove=True,
-    docker_url="unix://var/run/docker.sock",  # Используйте Unix socket, если вы монтируете его
-    docker_conn_id=None,  # Не используйте соединение, если не нужно
+    docker_url="unix://var/run/docker.sock",
+    docker_conn_id=None,
     network_mode="bridge",
     mounts=[
-        Mount(source='C:/Users/Asus/image_train/airflow/results', target='/app/results', type='bind'),
-        Mount(source='C:/Users/Asus/image_train/airflow/backup', target='/opt/airflow/backup', type='bind'),
+        Mount(source='./results', target='/app/results', type='bind'),
+        Mount(source='./backup', target='/opt/airflow/backup', type='bind'),
     ],
     dag=dag,
 )

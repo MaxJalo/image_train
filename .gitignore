@@ -62,6 +62,20 @@ desktop.ini
 # Другое
 TESTS_SUMMARY.py
 examples.py
-Makefile
+.vscode
 test_results.txt
+test_full_output.txt
+__pycache__
+NN_models
+.venv
+.pytest_cache
+photo_aggregate
+.env
+.env.*
+*.log
+__pycache__/
+*.pyc
+.DS_Store
+photo_aggregate/
+results/
 test_full_output.

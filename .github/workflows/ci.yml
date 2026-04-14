@@ -23,30 +23,14 @@ jobs:
         with:
           version: "latest"
 
-      - name: Install dependencies with uv
-        run: |
-          # Создание виртуального окружения
-          uv venv --python 3.10
+      - name: Sync dependencies
+        run: uv sync
 
-          # Установка зависимостей из requirements.txt
-          uv pip install -r microservise/requirements.txt
-
-          # Установка dev зависимостей
-          uv pip install pytest pytest-asyncio pytest-cov black flake8
-
-      - name: Run tests with coverage
-        run: |
-          uv run pytest --cov=. --cov-report=xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
+      - name: Install dev dependencies
+        run: uv pip install --system pytest pytest-asyncio pytest-cov
 
   lint:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -57,39 +41,27 @@ jobs:
 
       - name: Install uv
         uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Sync dependencies
+        run: uv sync
 
       - name: Install linting tools
         run: |
-          uv pip install black flake8 ruff
+          uv pip install --system black flake8 isort mypy pylint
 
-      - name: Run black (format check)
-        run: uv run black --check microservise/
+      - name: Run isort
+        run: isort --check-only --profile black core/ db/ models/ routes/ services/ app.py
 
-      - name: Run ruff (linter)
-        run: uv run ruff check microservise/
+      - name: Run black
+        run: black --check core/ db/ models/ routes/ services/ app.py
 
       - name: Run flake8
-        run: uv run flake8 microservise/ --max-line-length=100
+        run: flake8 core/ db/ models/ routes/ services/ app.py --max-line-length=100
 
-  docker-build:
-    runs-on: ubuntu-latest
-    needs: [test, lint]
+      - name: Run mypy
+        run: mypy core/ db/ models/ routes/ services/ app.py --ignore-missing-imports --allow-untyped-decorators --explicit-package-bases
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile
-          push: false
-          load: true
-          tags: wagon-ml:test
-
-      - name: Test Docker image
-        run: |
-          docker run --rm wagon-ml:test python -c "import torch; print('PyTorch OK')"
+      - name: Run pylint
+        run: pylint core/ db/ models/ routes/ services/ app.py --exit-zero

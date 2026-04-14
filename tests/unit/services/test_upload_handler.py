@@ -1,12 +1,11 @@
-import asyncio 
+import asyncio
 import zipfile
 from io import BytesIO
-from pathlib import Path
 
 from fastapi import UploadFile
 from PIL import Image
 
-from services.upload_handler import UploadHandler, ALLOWED_EXTENSIONS, MAX_FILE_SIZE
+from services.upload_handler import MAX_FILE_SIZE, UploadHandler
 
 
 class TestUploadHandler:
@@ -53,9 +52,7 @@ class TestUploadHandler:
     def test_validate_image_file_rejects_unsupported_extension(self):
         upload = UploadFile(filename="photo.txt", file=BytesIO(b"dummy"))
 
-        valid, error = asyncio.run(
-            UploadHandler.validate_image_file(upload)
-        )
+        valid, error = asyncio.run(UploadHandler.validate_image_file(upload))
 
         assert valid is False
         assert "Тип файла не поддерживается" in error
@@ -64,9 +61,7 @@ class TestUploadHandler:
         data = BytesIO(b"0" * (MAX_FILE_SIZE + 1))
         upload = UploadFile(filename="large.jpg", file=data)
 
-        valid, error = asyncio.run(
-            UploadHandler.validate_image_file(upload)
-        )
+        valid, error = asyncio.run(UploadHandler.validate_image_file(upload))
 
         assert valid is False
         assert "Размер файла превышает лимит" in error
@@ -77,9 +72,7 @@ class TestUploadHandler:
         buffer.seek(0)
         upload = UploadFile(filename="photo.png", file=buffer)
 
-        valid, error = asyncio.run(
-            UploadHandler.validate_image_file(upload)
-        )
+        valid, error = asyncio.run(UploadHandler.validate_image_file(upload))
 
         assert valid is True
         assert error is None
@@ -135,7 +128,9 @@ class TestUploadHandler:
         image_path = nested_dir / "photo.jpg"
         image_path.write_bytes(b"dummy")
 
-        camera_id, train_hash, depth = UploadHandler._extract_metadata_from_path(image_path, extract_root)
+        camera_id, train_hash, depth = UploadHandler._extract_metadata_from_path(
+            image_path, extract_root
+        )
 
         assert camera_id == "123"
         assert train_hash == "trainhash"

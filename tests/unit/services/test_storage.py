@@ -1,4 +1,4 @@
-import os 
+import os
 import time
 from pathlib import Path
 
@@ -22,7 +22,7 @@ class TestStorageService:
         result = storage.copy_photo_to_wagon(str(source_file), "wagon_1")
 
         assert result is True
-        target_file = (tmp_path / "photo_aggregate" / "wagon_1" / "sample.jpg")
+        target_file = tmp_path / "photo_aggregate" / "wagon_1" / "sample.jpg"
         assert target_file.exists()
         assert target_file.read_bytes() == b"JPEGDATA"
 

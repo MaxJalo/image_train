@@ -1,19 +1,18 @@
-import time 
 from datetime import datetime, timedelta
 
 import pytest
 
 from services.job_manager import (
     JOB_STORAGE,
-    JobManager,
     JobInfo,
+    JobManager,
     JobStatus,
+    complete_job,
     create_job,
+    fail_job,
     get_job,
     start_job,
     update_progress,
-    complete_job,
-    fail_job,
 )
 
 
@@ -79,4 +78,3 @@ class TestJobManager:
         JobManager.cleanup_old_jobs(max_age_hours=24)
 
         assert job_id not in JOB_STORAGE
-

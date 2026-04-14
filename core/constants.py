@@ -1,7 +1,6 @@
 # (constants)
-from typing import Dict, Any, Optional, Tuple
 from pathlib import Path
-
+from typing import Any, Optional
 
 SUPPORTED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".gif"}
 CONFIDENCE_THRESHOLD = 0.55

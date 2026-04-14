@@ -1,0 +1,4 @@
+[MASTER]
+ignore=tests,.venv,__pycache__,airflow
+[MESSAGES CONTROL]
+disable = C0114,C0115,C0116,W1203,W0718,R0902,R0914,R0915,R0801

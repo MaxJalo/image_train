@@ -1,8 +1,8 @@
-import asyncio 
+import asyncio
 from pathlib import Path
 from unittest.mock import AsyncMock
 
-from services import classifier, detector, aggregator, upload_handler, job_manager
+from services import aggregator, classifier, detector, job_manager, upload_handler
 from services.background_process import process_job
 from services.job_manager import JobStatus
 
@@ -17,19 +17,33 @@ class TestBackgroundProcess:
         image_file = temp_dir / "image.jpg"
         image_file.write_bytes(b"JPEGDATA")
 
-        monkeypatch.setattr(upload_handler.UploadHandler, "get_job_files", lambda _job_id: [image_file])
-        monkeypatch.setattr(classifier, "classify_and_group_wagons", AsyncMock(return_value={"wagon_1": [(image_file, 0)]}))
-        monkeypatch.setattr(detector, "detect_wagon_sides", AsyncMock(return_value={
-            "wagon_1": {
-                "total_photos": 1,
-                "processed_photos": 1,
-                "left_count": 1,
-                "right_count": 0,
-                "final_side": "left",
-                "cameras": [0]
-            }
-        }))
-        monkeypatch.setattr(aggregator, "process_and_save_batch", AsyncMock(return_value="batch_123"))
+        monkeypatch.setattr(
+            upload_handler.UploadHandler, "get_job_files", lambda _job_id: [image_file]
+        )
+        monkeypatch.setattr(
+            classifier,
+            "classify_and_group_wagons",
+            AsyncMock(return_value={"wagon_1": [(image_file, 0)]}),
+        )
+        monkeypatch.setattr(
+            detector,
+            "detect_wagon_sides",
+            AsyncMock(
+                return_value={
+                    "wagon_1": {
+                        "total_photos": 1,
+                        "processed_photos": 1,
+                        "left_count": 1,
+                        "right_count": 0,
+                        "final_side": "left",
+                        "cameras": [0],
+                    }
+                }
+            ),
+        )
+        monkeypatch.setattr(
+            aggregator, "process_and_save_batch", AsyncMock(return_value="batch_123")
+        )
         monkeypatch.setattr(upload_handler.UploadHandler, "cleanup_job_files", lambda _job_id: True)
 
         asyncio.run(process_job(job_id, str(temp_dir)))

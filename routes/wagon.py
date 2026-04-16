@@ -37,7 +37,7 @@ async def upload_zip_file(
             raise HTTPException(status_code=400, detail=error)
 
         # Создать задание (будет обновлено после распаковки)
-        JobManager.create_job(job_id, total_files=1)
+        JobManager.create_job(job_id=job_id, batch_id=batch_id, total_files=1)
 
         # Распаковать и сохранить
         success, job_dir, error, extracted_files = (
@@ -54,19 +54,22 @@ async def upload_zip_file(
         logger.info(f"✅ Извлечено {extracted_count} изображений из ZIP в {job_dir}")
 
         # Обновить информацию о задании
-        JobManager.create_job(job_id, total_files=extracted_count)
+        JobManager.update_job(job_id, total_files=extracted_count)
 
         # Запустить фоновую обработку
-        background_tasks.add_task(
-            process_job,
+        await process_job(
             job_id=job_id,
+            batch_id=batch_id,
             folder_path=str(job_dir / "extracted"),
             wagon_id=None,
         )
 
         logger.info(f"✅ Задание {job_id} отправлено на обработку")
-
-        return await aggregator.get_batch_results(batch_id)
+        result = await aggregator.get_batch_results(batch_id)
+        return {
+            "status": "success" if result.get("status") != "error" else "error",
+            "data": result,
+        }
 
     except HTTPException:
         raise
@@ -108,10 +111,7 @@ async def get_batch_results(batch_id: str):
 
     try:
         result = await aggregator.get_batch_results(batch_id)
-        return {
-            "status": "success" if result.get("status") != "error" else "error",
-            "data": result,
-        }
+        return result
     except Exception as e:
         logger.error(f"❌ Ошибка получения результатов: {type(e).__name__}: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

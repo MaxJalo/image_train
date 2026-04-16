@@ -56,9 +56,9 @@ COPY services/ ./services/
 COPY models/ ./models/
 COPY NN_models/ ./NN_models/
 
-RUN mkdir -p /app/{results,logs,temp} && \
+RUN mkdir -p /app/results && \
     adduser --system --group --no-create-home appuser && \
-    chown -R appuser:appuser /app/{results,logs,temp}
+    chown -R appuser:appuser /app/results
 
 USER appuser
 

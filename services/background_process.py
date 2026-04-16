@@ -13,12 +13,14 @@ logger = logging.getLogger(__name__)
 
 async def process_job(
     job_id: str,
+    batch_id: str,
     folder_path: str,
     camera_id: Optional[int] = None,
     wagon_id: Optional[str] = None,
 ) -> None:
 
     logger.info(f"🚀 Начало обработки задания {job_id}")
+    logger.info(f"   Батч {batch_id}")
     logger.info(f"   📂 Папка: {folder_path}")
     logger.info(f"   📷 Camera ID: {camera_id}")
     logger.info(f"   🚂 Wagon ID: {wagon_id}")
@@ -93,7 +95,6 @@ async def process_job(
         logger.info("⏳ Шаг 3: Сохранение результатов в MongoDB...")
         try:
             # Создать batch_id на основе job_id
-            batch_id = f"batch_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             folder_name = Path(folder_path).name
 
             saved_batch_id = await aggregator.process_and_save_batch(
